@@ -352,11 +352,11 @@ body{background:var(--parch2);color:var(--ink);font-family:'Crimson Pro',serif;m
 <div class="backup-panel">
   <div class="backup-title">💾 Резервна копія прогресу</div>
   <div class="backup-btns">
-    <button class="backup-btn export" onclick="exportData()">⬇ Зберегти файл</button>
+    <button class="backup-btn export" onclick="exportData()">⬆ Синхронізувати</button>
     <label class="backup-btn import" for="importFile">⬆ Відновити з файлу</label>
     <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
   </div>
-  <div class="backup-hint">Зберігай щодня → переміщуй у <strong>Файли → iCloud Drive</strong> → Scriptable автоматично зчитає</div>
+  <div class="backup-hint">Натисни щодня після відміток — дані підуть в GitHub, Scriptable прочитає автоматично</div>
 </div>
 
 </div>
@@ -924,19 +924,20 @@ function showToast(body,title){
 // EXPORT / IMPORT
 // ══════════════════════════════════════════
 
-function exportData(){
-  // Build sync-friendly snapshot for Scriptable widget
+// GitHub sync config
+const GH_TOKEN='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';
+const GH_REPO='ysja88-eng/life-quest';
+const GH_FILE='life-quest-sync.json';
+
+function buildSyncData(){
   const todayStr=dk(new Date());
   const todayData=S.days[todayStr]||{};
   const habitsDone=HABITS.filter(h=>todayData[h.id]).length;
   const aq=S.activePoolQuest;
   const poolQ=aq?getPoolQuestById(aq.pid):null;
   const drg=getDragon(S.peakPts);
-
-  const sync={
-    // Full state for restore
+  return{
     ...S,
-    // Widget snapshot (always fresh)
     widget:{
       updatedAt:new Date().toISOString(),
       todayStr,
@@ -951,17 +952,41 @@ function exportData(){
       totalXp:S.totalXp,
     }
   };
+}
 
-  const data=JSON.stringify(sync,null,2);
-  const blob=new Blob([data],{type:'application/json'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  // Fixed filename so Scriptable always reads the same file
-  a.href=url;
-  a.download='life-quest-sync.json';
-  a.click();
-  URL.revokeObjectURL(url);
-  showToast('Збережи файл у Файли → iCloud Drive 📂','💾 life-quest-sync.json');
+async function exportData(){
+  const syncData=buildSyncData();
+  const content=JSON.stringify(syncData,null,2);
+  const b64=btoa(unescape(encodeURIComponent(content)));
+
+  // Get current file SHA (needed for update)
+  let sha='';
+  try{
+    const r=await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`,{
+      headers:{'Authorization':'token '+GH_TOKEN,'Accept':'application/vnd.github.v3+json'}
+    });
+    if(r.ok){const j=await r.json();sha=j.sha||'';}
+  }catch(e){}
+
+  // Upload to GitHub
+  const body={message:'sync: '+dk(new Date()),content:b64};
+  if(sha)body.sha=sha;
+
+  try{
+    const r=await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`,{
+      method:'PUT',
+      headers:{'Authorization':'token '+GH_TOKEN,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
+      body:JSON.stringify(body)
+    });
+    if(r.ok){
+      showToast('Scriptable отримає дані автоматично','✦ Синхронізовано з GitHub');
+    }else{
+      const e=await r.json();
+      showToast('Помилка: '+e.message,'⚠️ Не вдалось');
+    }
+  }catch(e){
+    showToast('Перевір інтернет','⚠️ Помилка мережі');
+  }
 }
 
 function importData(event){
