@@ -352,11 +352,11 @@ body{background:var(--parch2);color:var(--ink);font-family:'Crimson Pro',serif;m
 <div class="backup-panel">
   <div class="backup-title">💾 Резервна копія прогресу</div>
   <div class="backup-btns">
-    <button class="backup-btn export" onclick="exportData()">⬆ Синхронізувати</button>
+    <button class="backup-btn export" onclick="exportData()">⬇ Зберегти файл</button>
     <label class="backup-btn import" for="importFile">⬆ Відновити з файлу</label>
     <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
   </div>
-  <div class="backup-hint">Натисни щодня після відміток — дані підуть в GitHub, Scriptable прочитає автоматично</div>
+  <div class="backup-hint">Зберігай файл раз на тиждень — якщо кеш почиститься, відновиш одним кліком</div>
 </div>
 
 </div>
@@ -473,7 +473,6 @@ if(!S.dragonPts)     S.dragonPts=0;
 if(!S.peakPts)       S.peakPts=0;
 if(!S.lastSeen)      S.lastSeen=null;
 if(!S.todayDate)     S.todayDate=null;
-if(!S.todayCounted)  S.todayCounted=false;
 if(!S.customQuests)  S.customQuests=[];       // user-created quests (always shown)
 // Active pool quest slot
 if(!S.activePoolQuest) S.activePoolQuest=null; // {pid, assignedOn, status:'active'|'done'|'declined', doneOn}
@@ -529,13 +528,17 @@ function applyMissedDays(){
 
 function recalcDragonToday(){
   const k=dk(new Date()),sc=habitScore(k)||0;
-  if(sc>=3&&!S.todayCounted){
-    S.dragonPts=Math.min(MAX_PTS,S.dragonPts+GOOD_DAY_PTS);
-    S.peakPts=Math.max(S.peakPts,S.dragonPts);
-    S.todayCounted=true;save();
-  }else if(sc<3&&S.todayCounted){
-    S.dragonPts=Math.max(0,S.dragonPts-GOOD_DAY_PTS);
-    S.todayCounted=false;save();
+  if(!S.days[k])S.days[k]={};
+  const wasCounted=!!S.days[k]._dragon;
+  if(sc>=3&&!wasCounted){
+    S.dragonPts=Math.min(MAX_PTS,(S.dragonPts||0)+GOOD_DAY_PTS);
+    S.peakPts=Math.max(S.peakPts||0,S.dragonPts);
+    S.days[k]._dragon=true;
+    save();
+  }else if(sc<3&&wasCounted){
+    S.dragonPts=Math.max(0,(S.dragonPts||0)-GOOD_DAY_PTS);
+    S.days[k]._dragon=false;
+    save();
   }
 }
 
@@ -902,8 +905,8 @@ function resetToday(){
   if(!confirm('Скинути звички на сьогодні?'))return;
   const k=dk(new Date());
   for(const h of HABITS)if(S.days[k]?.[h.id])S.totalXp=Math.max(0,S.totalXp-h.xp);
+  if(S.days[k]?._dragon){S.dragonPts=Math.max(0,S.dragonPts-GOOD_DAY_PTS);}
   S.days[k]={};
-  if(S.todayCounted){S.dragonPts=Math.max(0,S.dragonPts-GOOD_DAY_PTS);S.todayCounted=false;}
   save();render();
 }
 function floatXp(amt,color){
@@ -924,69 +927,20 @@ function showToast(body,title){
 // EXPORT / IMPORT
 // ══════════════════════════════════════════
 
-// GitHub sync config
-const GH_TOKEN='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';
-const GH_REPO='ysja88-eng/life-quest';
-const GH_FILE='life-quest-sync.json';
+// ══════════════════════════════════════════
+// EXPORT / IMPORT
+// ══════════════════════════════════════════
 
-function buildSyncData(){
-  const todayStr=dk(new Date());
-  const todayData=S.days[todayStr]||{};
-  const habitsDone=HABITS.filter(h=>todayData[h.id]).length;
-  const aq=S.activePoolQuest;
-  const poolQ=aq?getPoolQuestById(aq.pid):null;
-  const drg=getDragon(S.peakPts);
-  return{
-    ...S,
-    widget:{
-      updatedAt:new Date().toISOString(),
-      todayStr,
-      habitsDone,
-      habitsTotal:HABITS.length,
-      habits:HABITS.map(h=>({id:h.id,name:h.name,icon:h.icon,done:!!todayData[h.id]})),
-      dragon:{emoji:drg.emoji,stage:drg.stage,pts:S.dragonPts,peak:S.peakPts},
-      quest:poolQ&&aq.status==='active'?{name:poolQ.name,icon:poolQ.icon,xp:poolQ.xp,status:'active'}:
-            poolQ&&aq.status==='done'?{name:poolQ.name,icon:poolQ.icon,xp:poolQ.xp,status:'done'}:null,
-      level:getLvl(S.totalXp).n,
-      levelName:getLvl(S.totalXp).ua,
-      totalXp:S.totalXp,
-    }
-  };
-}
-
-async function exportData(){
-  const syncData=buildSyncData();
-  const content=JSON.stringify(syncData,null,2);
-  const b64=btoa(unescape(encodeURIComponent(content)));
-
-  // Get current file SHA (needed for update)
-  let sha='';
-  try{
-    const r=await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`,{
-      headers:{'Authorization':'token '+GH_TOKEN,'Accept':'application/vnd.github.v3+json'}
-    });
-    if(r.ok){const j=await r.json();sha=j.sha||'';}
-  }catch(e){}
-
-  // Upload to GitHub
-  const body={message:'sync: '+dk(new Date()),content:b64};
-  if(sha)body.sha=sha;
-
-  try{
-    const r=await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`,{
-      method:'PUT',
-      headers:{'Authorization':'token '+GH_TOKEN,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
-      body:JSON.stringify(body)
-    });
-    if(r.ok){
-      showToast('Scriptable отримає дані автоматично','✦ Синхронізовано з GitHub');
-    }else{
-      const e=await r.json();
-      showToast('Помилка: '+e.message,'⚠️ Не вдалось');
-    }
-  }catch(e){
-    showToast('Перевір інтернет','⚠️ Помилка мережі');
-  }
+function exportData(){
+  const data=JSON.stringify(S,null,2);
+  const blob=new Blob([data],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download='life-quest-backup.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Файл збережено 💾','✦ Резервна копія');
 }
 
 function importData(event){
@@ -996,22 +950,20 @@ function importData(event){
   reader.onload=e=>{
     try{
       const parsed=JSON.parse(e.target.result);
-      // Validate it looks like our data
       if(typeof parsed.totalXp==='undefined'){
-        alert('Файл не схожий на резервну копію Life Quest. Спробуй інший файл.');
+        alert('Файл не схожий на резервну копію Life Quest.');
         return;
       }
-      if(!confirm(`Відновити прогрес з файлу?\nXP: ${parsed.totalXp} · Рівень: ${getLvl(parsed.totalXp||0).n}\n\nПоточний прогрес буде замінено.`))return;
+      if(!confirm(`Відновити прогрес?\nXP: ${parsed.totalXp} · Рівень: ${getLvl(parsed.totalXp||0).n}\n\nПоточний прогрес буде замінено.`))return;
       Object.assign(S,parsed);
       save();
       render();
-      showToast('Прогрес відновлено успішно! 🐉','✦ Ласкаво повернулась');
+      showToast('Прогрес відновлено! 🐉','✦ Ласкаво повернулась');
     }catch{
-      alert('Не вдалося прочитати файл. Переконайся що це правильний .json файл.');
+      alert('Не вдалося прочитати файл.');
     }
   };
   reader.readAsText(file);
-  // Reset input so same file can be re-imported
   event.target.value='';
 }
 
@@ -1023,13 +975,18 @@ applyMissedDays();
 maybeRotatePoolQuest();
 S.lastSeen=dk(new Date());
 const tStr=dk(new Date());
-if(S.todayDate!==tStr){S.todayDate=tStr;S.todayCounted=false;}
-const sc0=habitScore(tStr)||0;
-if(sc0>=3&&!S.todayCounted){
-  S.dragonPts=Math.min(MAX_PTS,S.dragonPts+GOOD_DAY_PTS);
-  S.peakPts=Math.max(S.peakPts,S.dragonPts);
-  S.todayCounted=true;
+S.todayDate=tStr;
+
+// Dragon: recount based on _dragon flag stored per day
+// This works correctly across page reloads
+const tData=S.days[tStr]||{};
+if((habitScore(tStr)||0)>=3 && !tData._dragon){
+  if(!S.days[tStr])S.days[tStr]={};
+  S.dragonPts=Math.min(MAX_PTS,(S.dragonPts||0)+GOOD_DAY_PTS);
+  S.peakPts=Math.max(S.peakPts||0,S.dragonPts);
+  S.days[tStr]._dragon=true;
 }
+
 save();
 render();
 </script>
