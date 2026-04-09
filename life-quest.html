@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Life Quest · Іскра</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --parch:#fdf6e3;--parch2:#f7ead0;--parch3:#eedcb5;--parch4:#e3ca96;
+  --ink:#2c1810;--ink2:#5c3d2e;--ink3:#8b6551;--ink4:#b89070;
+  --gold:#c8960c;--gold2:#f0b429;--gold3:#ffd166;
+  --forest:#3d6b4f;--forest2:#5a9e72;
+  --crimson:#8b2635;--azure:#2c5f8a;--purple:#5b3a7e;--purple2:#9b6bcc;
+  --shadow:0 4px 24px rgba(44,24,16,.12);--shadow2:0 8px 40px rgba(44,24,16,.18);--r:16px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--parch2);color:var(--ink);font-family:'Crimson Pro',serif;min-height:100vh;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E"),
+  radial-gradient(ellipse at 15% 10%,rgba(200,150,12,.08) 0%,transparent 55%),
+  radial-gradient(ellipse at 85% 90%,rgba(61,107,79,.07) 0%,transparent 55%)}
+.page{max-width:720px;margin:0 auto;padding:36px 20px 60px}
+
+/* HEADER */
+.hdr{text-align:center;margin-bottom:28px}
+.hdr-eye{font-size:10px;letter-spacing:6px;text-transform:uppercase;color:var(--ink4);margin-bottom:8px;font-family:'Inter',sans-serif;font-weight:300}
+.hdr-title{font-family:'Cinzel',serif;font-size:34px;font-weight:700;color:var(--ink);margin-bottom:4px}
+.hdr-title span{color:var(--gold)}
+.hdr-line{height:1px;background:linear-gradient(90deg,transparent,var(--parch4),var(--gold3),var(--parch4),transparent);max-width:400px;margin:8px auto 0}
+
+/* DRAGON */
+.dragon-card{background:var(--parch);border:2px solid var(--parch4);border-radius:var(--r);
+  padding:22px 26px;margin-bottom:16px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.dragon-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,transparent,var(--purple2),var(--gold3),var(--purple2),transparent)}
+.dgrid{display:grid;grid-template-columns:1fr 130px;gap:20px;align-items:center}
+.d-lbl{font-family:'Inter',sans-serif;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--ink4);margin-bottom:5px}
+.d-nrow{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.d-name{font-family:'Cinzel',serif;font-size:19px;color:var(--ink)}
+.d-stage{font-family:'Inter',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;
+  padding:2px 9px;border-radius:99px;background:var(--parch3);border:1px solid var(--parch4);color:var(--ink3)}
+.d-mood{font-size:13px;color:var(--ink3);font-style:italic;margin-bottom:14px;line-height:1.5;min-height:36px}
+.bond-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.bond-title{font-family:'Inter',sans-serif;font-size:10px;color:var(--ink4)}
+.bond-pts{font-family:'Cinzel',serif;font-size:13px;color:var(--ink2)}
+.bond-bg{height:12px;background:var(--parch3);border-radius:99px;overflow:hidden;border:1px solid var(--parch4)}
+.bond-fill{height:100%;border-radius:99px;transition:width 1s cubic-bezier(.34,1.2,.64,1),background .5s;
+  background:linear-gradient(90deg,#6b3fa0,#9b6bcc,#c9a8e8);box-shadow:0 0 10px rgba(107,63,160,.3);position:relative}
+.bond-fill::after{content:'';position:absolute;top:2px;left:8px;right:8px;height:3px;background:rgba(255,255,255,.3);border-radius:99px}
+.bond-fill.low{background:linear-gradient(90deg,#8b2635,#c0392b,#e74c3c)}
+.bond-fill.mid{background:linear-gradient(90deg,#c8960c,#f0b429,#ffd166)}
+.d-stats{display:flex;gap:18px;margin-top:12px}
+.ds{text-align:center}
+.ds-n{font-family:'Cinzel',serif;font-size:18px;color:var(--ink2);line-height:1}
+.ds-l{font-family:'Inter',sans-serif;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--ink4);margin-top:1px}
+.d-visual{display:flex;align-items:center;justify-content:center;position:relative;width:130px;height:130px}
+.d-aura{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,rgba(155,107,204,.2) 0%,transparent 70%);animation:aura 3s ease-in-out infinite}
+@keyframes aura{0%,100%{transform:scale(1);opacity:.6}50%{transform:scale(1.1);opacity:1}}
+.d-emoji{font-size:72px;line-height:1;filter:drop-shadow(0 4px 14px rgba(91,58,126,.3));animation:dfloat 4s ease-in-out infinite;position:relative;z-index:1;transition:all .5s}
+.d-emoji.sleeping{animation:none;filter:grayscale(.5) drop-shadow(0 2px 6px rgba(0,0,0,.15))}
+@keyframes dfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+
+/* CHAR */
+.char-card{background:var(--parch);border:2px solid var(--parch4);border-radius:var(--r);padding:20px 26px;margin-bottom:16px;box-shadow:var(--shadow);position:relative}
+.char-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--parch4),var(--gold3),var(--parch4),transparent)}
+.char-card::after{content:'⚜';position:absolute;top:10px;right:16px;font-size:14px;color:var(--gold);opacity:.4}
+.cg{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center}
+.c-ava{width:58px;height:58px;background:linear-gradient(135deg,var(--parch3),var(--parch2));border:2px solid var(--parch4);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:30px;flex-shrink:0}
+.c-sub{font-family:'Inter',sans-serif;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--ink4);margin-bottom:2px}
+.c-name{font-family:'Cinzel',serif;font-size:20px;color:var(--ink);margin-bottom:3px}
+.c-class{font-size:12px;color:var(--forest);font-style:italic;margin-bottom:11px}
+.xpl{display:flex;justify-content:space-between;font-family:'Inter',sans-serif;font-size:10px;color:var(--ink4);margin-bottom:5px}
+.xpbg{height:7px;background:var(--parch3);border-radius:99px;overflow:hidden;border:1px solid var(--parch4)}
+.xpfill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2),var(--gold3));border-radius:99px;transition:width .9s cubic-bezier(.34,1.2,.64,1)}
+.c-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0}
+.lvlb{background:linear-gradient(135deg,var(--gold),var(--gold2));border-radius:10px;padding:8px 14px;text-align:center;box-shadow:0 2px 12px rgba(200,150,12,.3)}
+.lvln{font-family:'Cinzel',serif;font-size:24px;color:var(--ink);line-height:1;font-weight:700}
+.lvlw{font-family:'Inter',sans-serif;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--ink2)}
+.txp{text-align:right}
+.txpn{font-family:'Cinzel',serif;font-size:18px;color:var(--ink2);line-height:1}
+.txpl{font-family:'Inter',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--ink4)}
+
+/* DATE NAV */
+.dnav{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:26px}
+.narr{width:34px;height:34px;border-radius:50%;border:1.5px solid var(--parch4);background:var(--parch);color:var(--ink3);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .2s;box-shadow:var(--shadow)}
+.narr:hover{border-color:var(--gold);color:var(--gold)}
+.nlbl{font-family:'Cinzel',serif;font-size:15px;color:var(--ink2);min-width:200px;text-align:center}
+.tbtn{background:transparent;border:1.5px solid var(--parch4);color:var(--ink4);font-family:'Inter',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:5px 14px;border-radius:99px;cursor:pointer;transition:all .2s}
+.tbtn:hover{border-color:var(--gold);color:var(--gold)}
+
+/* SECTION */
+.sec{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.sec-i{font-size:15px}
+.sec-t{font-family:'Cinzel',serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--ink3)}
+.sec-l{flex:1;height:1px;background:linear-gradient(90deg,var(--parch4),transparent)}
+.sec-btn{background:transparent;border:1px solid var(--parch4);color:var(--ink4);font-family:'Inter',sans-serif;font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:4px 12px;border-radius:99px;cursor:pointer;transition:all .2s;white-space:nowrap;flex-shrink:0}
+.sec-btn:hover{border-color:var(--gold);color:var(--gold)}
+
+/* HABIT ROW */
+.habits{display:flex;flex-direction:column;gap:10px;margin-bottom:26px}
+.hrow{background:var(--parch);border:1.5px solid var(--parch4);border-radius:14px;padding:14px 18px;
+  display:grid;grid-template-columns:42px 1fr auto;align-items:center;gap:12px;
+  cursor:pointer;transition:all .3s;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.hrow::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--hc,var(--gold));opacity:0;transition:opacity .3s;border-radius:4px 0 0 4px}
+.hrow:hover{transform:translateX(3px);border-color:color-mix(in srgb,var(--hc,var(--gold)) 50%,var(--parch4))}
+.hrow:hover::before{opacity:.5}
+.hrow.done{background:linear-gradient(135deg,var(--parch),color-mix(in srgb,var(--hc,var(--gold)) 6%,var(--parch)));border-color:color-mix(in srgb,var(--hc,var(--gold)) 40%,var(--parch4))}
+.hrow.done::before{opacity:1}
+.hrow.past{cursor:default;opacity:.65}
+.hrow.past:hover{transform:none}
+.hemb{width:42px;height:42px;border-radius:10px;background:var(--parch2);border:1.5px solid var(--parch4);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;transition:all .3s}
+.hrow.done .hemb{background:color-mix(in srgb,var(--hc,var(--gold)) 14%,var(--parch2));border-color:color-mix(in srgb,var(--hc,var(--gold)) 35%,var(--parch4))}
+.hname{font-family:'Cinzel',serif;font-size:13px;color:var(--ink);margin-bottom:2px;font-weight:600}
+.hdesc{font-size:12px;color:var(--ink3);font-style:italic;margin-bottom:5px}
+.hfoot{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.sb{display:flex;align-items:center;gap:3px;font-family:'Inter',sans-serif;font-size:10px;color:var(--ink4)}
+.sb.fire{color:#c0532b;font-weight:500}
+.trail{display:flex;gap:3px}
+.pip{width:6px;height:6px;border-radius:2px;background:var(--parch3);border:1px solid var(--parch4);transition:all .3s}
+.pip.lit{background:var(--hc,var(--gold));border-color:var(--hc,var(--gold));opacity:.8}
+.pip.cur{box-shadow:0 0 0 1.5px color-mix(in srgb,var(--hc,var(--gold)) 50%,transparent)}
+.hright{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0}
+.seal{width:28px;height:28px;border-radius:50%;border:2px solid var(--parch4);display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .3s;color:transparent;background:var(--parch2)}
+.hrow.done .seal{background:var(--hc,var(--gold));border-color:var(--hc,var(--gold));color:#fff;box-shadow:0 2px 10px color-mix(in srgb,var(--hc,var(--gold)) 40%,transparent)}
+.xpc{font-family:'Inter',sans-serif;font-size:10px;color:var(--ink4);white-space:nowrap}
+.hrow.done .xpc{color:var(--gold);font-weight:500}
+
+/* QUEST CARDS */
+.quest-list{display:flex;flex-direction:column;gap:12px;margin-bottom:26px}
+
+/* Active quest */
+.qcard{background:var(--parch);border:1.5px solid var(--parch4);border-radius:14px;
+  padding:18px 20px;box-shadow:var(--shadow);position:relative;overflow:hidden;transition:all .3s}
+.qcard::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;
+  background:var(--qc,var(--purple));border-radius:4px 0 0 4px}
+.qcard.q-done{background:linear-gradient(135deg,var(--parch),color-mix(in srgb,var(--qc,var(--purple)) 6%,var(--parch)));
+  border-color:color-mix(in srgb,var(--qc,var(--purple)) 35%,var(--parch4))}
+.qcard.q-done::before{opacity:1}
+.qcard.q-declined{opacity:.55;background:var(--parch2)}
+.qcard.q-declined::before{background:var(--ink4);opacity:.4}
+
+.qtop{display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:start}
+.qemb{width:44px;height:44px;border-radius:10px;background:var(--parch2);border:1.5px solid var(--parch4);
+  display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;transition:all .3s}
+.qcard.q-done .qemb{background:color-mix(in srgb,var(--qc,var(--purple)) 14%,var(--parch2));border-color:color-mix(in srgb,var(--qc,var(--purple)) 35%,var(--parch4))}
+.qmid{min-width:0}
+.qname{font-family:'Cinzel',serif;font-size:14px;color:var(--ink);margin-bottom:2px;font-weight:600}
+.qdesc{font-size:12px;color:var(--ink3);font-style:italic;margin-bottom:7px}
+.qmeta{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.qtag{font-family:'Inter',sans-serif;font-size:9px;letter-spacing:1px;text-transform:uppercase;
+  padding:2px 8px;border-radius:99px;border:1px solid var(--parch4);color:var(--ink4);background:var(--parch2)}
+.qtag.pool{border-color:var(--azure);color:var(--azure)}
+.qtag.custom{border-color:var(--forest);color:var(--forest)}
+.qtag.repeat-t{border-color:var(--gold);color:var(--gold)}
+.qright{display:flex;flex-direction:column;align-items:flex-end;gap:7px;flex-shrink:0}
+.qxp-big{font-family:'Cinzel',serif;font-size:20px;color:var(--ink3);line-height:1;text-align:right}
+.qcard.q-done .qxp-big,.qcard .qxp-big.earned{color:var(--qc,var(--purple))}
+.qxp-lbl{font-family:'Inter',sans-serif;font-size:8px;letter-spacing:1px;text-transform:uppercase;color:var(--ink4);text-align:right}
+
+/* Quest action buttons */
+.q-actions{display:flex;gap:8px;margin-top:12px;padding-top:10px;border-top:1px solid var(--parch3)}
+.q-btn{flex:1;padding:7px 10px;border-radius:9px;font-family:'Inter',sans-serif;font-size:10px;
+  letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .2s;border:1.5px solid;text-align:center}
+.q-btn.complete{background:color-mix(in srgb,var(--qc,var(--purple)) 12%,var(--parch));
+  border-color:var(--qc,var(--purple));color:var(--qc,var(--purple));font-weight:500}
+.q-btn.complete:hover{background:color-mix(in srgb,var(--qc,var(--purple)) 22%,var(--parch))}
+.q-btn.decline{background:transparent;border-color:var(--parch4);color:var(--ink4)}
+.q-btn.decline:hover{border-color:var(--crimson);color:var(--crimson)}
+.q-btn.edit-q{background:transparent;border-color:var(--parch4);color:var(--ink4)}
+.q-btn.edit-q:hover{border-color:var(--ink3);color:var(--ink3)}
+
+/* Cooldown card */
+.q-cooldown{background:var(--parch2);border:1px dashed var(--parch4);border-radius:12px;
+  padding:14px 18px;text-align:center}
+.q-cd-title{font-family:'Cinzel',serif;font-size:13px;color:var(--ink3);margin-bottom:3px}
+.q-cd-sub{font-family:'Inter',sans-serif;font-size:11px;color:var(--ink4)}
+
+/* Incoming quest teaser */
+.q-incoming{background:linear-gradient(135deg,var(--parch),color-mix(in srgb,var(--purple) 5%,var(--parch)));
+  border:1.5px dashed var(--purple2);border-radius:14px;padding:14px 18px;
+  display:flex;align-items:center;gap:14px}
+.q-incoming-icon{font-size:28px;flex-shrink:0;opacity:.5}
+.q-incoming-text{}
+.q-incoming-title{font-family:'Cinzel',serif;font-size:13px;color:var(--ink3)}
+.q-incoming-sub{font-family:'Inter',sans-serif;font-size:11px;color:var(--ink4);margin-top:2px}
+
+/* ADD/EDIT MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(44,24,16,.5);z-index:100;
+  display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(2px)}
+.modal-overlay.show{display:flex}
+.modal{background:var(--parch);border:2px solid var(--parch4);border-radius:var(--r);
+  padding:28px;box-shadow:var(--shadow2);width:100%;max-width:480px;position:relative;max-height:90vh;overflow-y:auto}
+.modal::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,transparent,var(--purple2),var(--gold3),var(--purple2),transparent)}
+.modal-title{font-family:'Cinzel',serif;font-size:18px;color:var(--ink);margin-bottom:20px}
+.field{margin-bottom:14px}
+.field label{font-family:'Inter',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ink4);display:block;margin-bottom:5px}
+.field input,.field textarea,.field select{width:100%;background:var(--parch2);border:1.5px solid var(--parch4);border-radius:8px;padding:9px 13px;font-family:'Crimson Pro',serif;font-size:14px;color:var(--ink);outline:none;transition:border .2s}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--gold)}
+.field textarea{resize:none;height:60px}
+.field select{cursor:pointer;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23b89070' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.emoji-picks{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px}
+.ep{width:34px;height:34px;border-radius:8px;background:var(--parch2);border:1.5px solid var(--parch4);display:flex;align-items:center;justify-content:center;font-size:17px;cursor:pointer;transition:all .2s}
+.ep:hover,.ep.active{border-color:var(--gold);background:var(--parch3)}
+.modal-btns{display:flex;gap:8px;margin-top:20px;flex-wrap:wrap}
+.btn-save{flex:1;background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;color:var(--ink);font-family:'Cinzel',serif;font-size:13px;padding:10px;border-radius:10px;cursor:pointer;box-shadow:0 2px 12px rgba(200,150,12,.3);transition:all .2s;min-width:120px}
+.btn-save:hover{transform:translateY(-1px)}
+.btn-cancel{background:transparent;border:1.5px solid var(--parch4);color:var(--ink4);font-family:'Inter',sans-serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;padding:10px 16px;border-radius:10px;cursor:pointer;transition:all .2s}
+.btn-cancel:hover{border-color:var(--crimson);color:var(--crimson)}
+.btn-del{background:transparent;border:1.5px solid rgba(139,38,53,.3);color:var(--crimson);font-family:'Inter',sans-serif;font-size:11px;padding:10px 14px;border-radius:10px;cursor:pointer;transition:all .2s}
+.btn-del:hover{background:rgba(139,38,53,.08)}
+
+/* MAP */
+.map-card{background:var(--parch);border:2px solid var(--parch4);border-radius:var(--r);padding:22px 26px;box-shadow:var(--shadow);margin-bottom:22px;position:relative}
+.map-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--parch4),var(--gold3),var(--parch4),transparent)}
+.mg{display:grid;grid-template-columns:repeat(7,1fr);gap:7px;margin-top:14px}
+.mday{text-align:center}
+.mdn{font-family:'Inter',sans-serif;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--ink4);margin-bottom:6px}
+.mhex{width:40px;height:40px;border-radius:10px;margin:0 auto;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:11px;color:var(--ink4);background:var(--parch2);border:1.5px solid var(--parch4);transition:all .3s}
+.mhex.perfect{background:linear-gradient(135deg,var(--forest),var(--forest2));border-color:var(--forest2);color:#fff;box-shadow:0 4px 16px rgba(61,107,79,.3)}
+.mhex.good{background:var(--parch3);border-color:var(--gold);color:var(--ink2)}
+.mhex.meh{border-color:var(--ink4);color:var(--ink3)}
+.mhex.now{box-shadow:0 0 0 2.5px var(--gold),0 4px 16px rgba(200,150,12,.25)}
+
+/* QUOTE */
+.qq{text-align:center;font-style:italic;font-size:15px;color:var(--ink3);line-height:1.8;padding:0 20px;margin-bottom:24px}
+
+/* RESET */
+.rbtn{background:transparent;border:1.5px solid var(--parch4);color:var(--ink4);font-family:'Inter',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:8px 22px;border-radius:99px;cursor:pointer;display:block;margin:0 auto;transition:all .2s}
+.rbtn:hover{border-color:var(--crimson);color:var(--crimson)}
+
+/* TOAST */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(90px);background:var(--parch);border:2px solid var(--gold);border-radius:14px;padding:14px 22px;box-shadow:var(--shadow2);z-index:999;transition:transform .5s cubic-bezier(.34,1.56,.64,1);text-align:center;min-width:260px}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.tt{font-family:'Cinzel',serif;font-size:14px;color:var(--gold);margin-bottom:3px}
+.tb{font-size:13px;color:var(--ink3);font-style:italic}
+
+@keyframes rise{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-60px) scale(1.1)}}
+.xpfl{position:fixed;font-family:'Cinzel',serif;font-size:16px;pointer-events:none;z-index:998;animation:rise 1.5s ease-out forwards}
+@keyframes evolve-glow{0%{box-shadow:0 0 0 0 rgba(155,107,204,0)}50%{box-shadow:0 0 50px 20px rgba(155,107,204,.5)}100%{box-shadow:0 0 0 0 rgba(155,107,204,0)}}
+.dragon-card.evolving{animation:evolve-glow 1.8s ease-out}
+.backup-panel{margin-top:24px;background:var(--parch);border:1px solid var(--parch4);border-radius:14px;padding:18px 22px;box-shadow:var(--shadow);text-align:center}
+.backup-title{font-family:'Cinzel',serif;font-size:12px;letter-spacing:2px;color:var(--ink3);margin-bottom:12px}
+.backup-btns{display:flex;gap:10px;justify-content:center;margin-bottom:10px;flex-wrap:wrap}
+.backup-btn{padding:9px 20px;border-radius:10px;font-family:'Inter',sans-serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .2s;border:1.5px solid}
+.backup-btn.export{background:linear-gradient(135deg,var(--gold),var(--gold2));border-color:var(--gold);color:var(--ink);box-shadow:0 2px 10px rgba(200,150,12,.25)}
+.backup-btn.export:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(200,150,12,.35)}
+.backup-btn.import{background:var(--parch2);border-color:var(--parch4);color:var(--ink3);display:inline-block}
+.backup-btn.import:hover{border-color:var(--forest);color:var(--forest)}
+.backup-hint{font-family:'Inter',sans-serif;font-size:10px;color:var(--ink4);line-height:1.5;font-style:italic}
+
+@media(max-width:560px){
+  .cg{grid-template-columns:auto 1fr;gap:12px}
+  .c-right{flex-direction:row;align-items:center;grid-column:1/-1;justify-content:space-between}
+  .hdr-title{font-size:28px}
+  .mhex{width:34px;height:34px;font-size:10px}
+  .dgrid{grid-template-columns:1fr}
+  .d-visual{margin:16px auto 0}
+  .d-stats{justify-content:center}
+  .field-row{grid-template-columns:1fr}
+  .qtop{grid-template-columns:40px 1fr auto}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="hdr">
+  <div class="hdr-eye">Особистий щоденник героя</div>
+  <h1 class="hdr-title">Life <span>Quest</span></h1>
+  <div class="hdr-line"></div>
+</header>
+
+<!-- DRAGON -->
+<div class="dragon-card" id="dragonCard">
+  <div class="dgrid">
+    <div>
+      <div class="d-lbl">Твій компаньйон</div>
+      <div class="d-nrow">
+        <div class="d-name">Іскра</div>
+        <div class="d-stage" id="dStage">Яйце</div>
+      </div>
+      <div class="d-mood" id="dMood">Чекає на перше пробудження…</div>
+      <div class="bond-head">
+        <span class="bond-title">❤️ Сила духу</span>
+        <span class="bond-pts" id="bondPts">0 / 100</span>
+      </div>
+      <div class="bond-bg"><div class="bond-fill" id="bondFill" style="width:0%"></div></div>
+      <div class="d-stats">
+        <div class="ds"><div class="ds-n" id="dPts">0</div><div class="ds-l">Очки</div></div>
+        <div class="ds"><div class="ds-n" id="dBest">0</div><div class="ds-l">Рекорд</div></div>
+        <div class="ds"><div class="ds-n" id="dTotal">0</div><div class="ds-l">Хороших днів</div></div>
+      </div>
+    </div>
+    <div class="d-visual">
+      <div class="d-aura"></div>
+      <div class="d-emoji" id="dEmoji">🥚</div>
+    </div>
+  </div>
+</div>
+
+<!-- CHAR -->
+<div class="char-card">
+  <div class="cg">
+    <div class="c-ava">🧙‍♀️</div>
+    <div>
+      <div class="c-sub">Герой щоденника</div>
+      <div class="c-name">Людмила</div>
+      <div class="c-class" id="cClass">✦ Початківець</div>
+      <div class="xpl"><span>До наступного рівня</span><span id="xpTxt">0/150 xp</span></div>
+      <div class="xpbg"><div class="xpfill" id="xpFill" style="width:0%"></div></div>
+    </div>
+    <div class="c-right">
+      <div class="lvlb"><div class="lvln" id="lvlN">1</div><div class="lvlw">рівень</div></div>
+      <div class="txp"><div class="txpn" id="txpN">0</div><div class="txpl">Всього XP</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="qq" id="qq"></div>
+
+<div class="dnav">
+  <button class="narr" onclick="chDay(-1)">‹</button>
+  <div class="nlbl" id="nlbl"></div>
+  <button class="narr" onclick="chDay(1)">›</button>
+  <button class="tbtn" onclick="goToday()">Сьогодні</button>
+</div>
+
+<!-- HABITS -->
+<div class="sec">
+  <span class="sec-i">⚔️</span><span class="sec-t">Щоденні звички</span><div class="sec-l"></div>
+</div>
+<div class="habits" id="habits"></div>
+
+<!-- QUESTS -->
+<div class="sec">
+  <span class="sec-i">🗺️</span><span class="sec-t">Квести</span><div class="sec-l"></div>
+  <button class="sec-btn" onclick="openAddQuest()">+ Свій квест</button>
+</div>
+<div class="quest-list" id="questList"></div>
+
+<!-- MAP -->
+<div class="map-card">
+  <div class="sec"><span class="sec-i">📅</span><span class="sec-t">Тиждень</span><div class="sec-l"></div></div>
+  <div class="mg" id="mg"></div>
+</div>
+
+<button class="rbtn" onclick="resetToday()">↺ скинути звички сьогодні</button>
+
+<!-- BACKUP PANEL -->
+<div class="backup-panel">
+  <div class="backup-title">💾 Резервна копія прогресу</div>
+  <div class="backup-btns">
+    <button class="backup-btn export" onclick="exportData()">⬇ Зберегти файл</button>
+    <label class="backup-btn import" for="importFile">⬆ Відновити з файлу</label>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+  </div>
+  <div class="backup-hint">Зберігай щодня → переміщуй у <strong>Файли → iCloud Drive</strong> → Scriptable автоматично зчитає</div>
+</div>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-title" id="modalTitle">Новий квест</div>
+    <div class="field">
+      <label>Іконка</label>
+      <div class="emoji-picks" id="emojiPicks"></div>
+    </div>
+    <div class="field"><label>Назва квесту</label><input id="qName" placeholder="Наприклад: Пробігти 5 км" /></div>
+    <div class="field"><label>Опис (необов'язково)</label><textarea id="qDesc" placeholder="Деталі…"></textarea></div>
+    <div class="field-row">
+      <div class="field">
+        <label>XP нагорода</label>
+        <select id="qXp">
+          <option value="15">15 xp — легкий</option>
+          <option value="25" selected>25 xp — середній</option>
+          <option value="40">40 xp — важкий</option>
+          <option value="60">60 xp — епічний</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Тип</label>
+        <select id="qType">
+          <option value="once">Разовий</option>
+          <option value="repeat">Повторюваний</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">Скасувати</button>
+      <button class="btn-del" id="btnDel" onclick="deleteQuest()" style="display:none">Видалити</button>
+      <button class="btn-save" onclick="saveQuest()">Зберегти</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <div class="tt" id="tt">⚔️</div>
+  <div class="tb" id="tb"></div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// STATIC CONFIG
+// ══════════════════════════════════════════
+
+const HABITS=[
+  {id:'bed',  icon:'🌙',name:'Відбій до 23:00',       desc:'Лягти в ліжко до опівночі',           xp:10,color:'#5b3a7e'},
+  {id:'walk', icon:'🌿',name:'Прогулянка 30хв+',      desc:'Вийти на повітря мінімум пів години',  xp:8, color:'#3d6b4f'},
+  {id:'read', icon:'📖',name:'Читання 20стор+',        desc:'Книга, не стрічка',                    xp:8, color:'#2c5f8a'},
+  {id:'hobby',icon:'🎨',name:'Хобі',                  desc:'Час тільки для себе',                   xp:10,color:'#c8960c'},
+  {id:'phone',icon:'🕯️',name:'Без телефону після 21', desc:'Екран вимкнено — душа відпочиває',     xp:5, color:'#8b2635'},
+];
+
+const LEVELS=[
+  {n:1,xp:0,ua:'Початківець'},{n:2,xp:150,ua:'Мандрівник'},{n:3,xp:400,ua:'Шукач'},
+  {n:4,xp:800,ua:'Охоронець'},{n:5,xp:1400,ua:'Воїн духу'},{n:6,xp:2200,ua:'Герой'},
+  {n:7,xp:3200,ua:'Легенда'},{n:8,xp:4500,ua:'Міф'},
+];
+
+const DRAGON=[
+  {min:0,  emoji:'🥚',  stage:'Яйце',         moods:['Чекає на перше пробудження…','Щось ворушиться всередині…']},
+  {min:20, emoji:'🐣',  stage:'Пробуджується',moods:['Прокинулася! Продовжуй! ✨','Маленька але сильна духом']},
+  {min:40, emoji:'🐲',  stage:'Дракончик',    moods:['Вже літає поруч! 🌿','Пишається твоїми звичками']},
+  {min:70, emoji:'🐉',  stage:'Дорослий',     moods:['Могутній і відданий. Ти герой!','Іскра горить яскраво 🔥']},
+  {min:95, emoji:'✨🐉', stage:'Легендарний',  moods:['Легендарний дракон! Ти — міф! 👑','Абсолютна сила духу ✨']},
+];
+
+const MISS_PENALTY=5, GOOD_DAY_PTS=10, MAX_PTS=100;
+const QUEST_COOLDOWN_DAYS=2; // days before new quest appears after done/declined
+
+// Pool of rotating quests — system will pick one at a time
+const QUEST_POOL=[
+  {pid:'p01',icon:'🏃',name:'Пробігти 3 км',         desc:'Перший крок до бігової звички',           xp:30,type:'once',  color:'#3d6b4f'},
+  {pid:'p02',icon:'🧘',name:'Медитація 7 днів',       desc:'По 10 хвилин щодня тиждень підряд',       xp:50,type:'once',  color:'#5b3a7e'},
+  {pid:'p03',icon:'🌍',name:'День без соцмереж',      desc:'24 години без Instagram / TikTok',        xp:25,type:'repeat',color:'#2c5f8a'},
+  {pid:'p04',icon:'📚',name:'Дочитати книгу',         desc:'Будь-яку книгу — від початку до кінця',   xp:40,type:'once',  color:'#c8960c'},
+  {pid:'p05',icon:'🍳',name:'Приготувати нову страву',desc:'Спробувати рецепт якого ще не робила',    xp:20,type:'repeat',color:'#8b4513'},
+  {pid:'p06',icon:'📝',name:'Написати у щоденник',    desc:'Хоча б пів сторінки своїх думок',         xp:15,type:'repeat',color:'#5b3a7e'},
+  {pid:'p07',icon:'🌅',name:'Ранковий ритуал',        desc:'Встати до 7:00 і зробити щось для себе',  xp:20,type:'repeat',color:'#c8960c'},
+  {pid:'p08',icon:'🤸',name:'Розтяжка 10 хв',        desc:'Після пробудження або ввечері',            xp:15,type:'repeat',color:'#3d6b4f'},
+  {pid:'p09',icon:'💧',name:'2 літри води на день',   desc:'Відслідкувати протягом доби',              xp:15,type:'repeat',color:'#2c5f8a'},
+  {pid:'p10',icon:'📵',name:'Без телефону вранці',    desc:'Перша година дня без екрану',             xp:20,type:'repeat',color:'#8b2635'},
+  {pid:'p11',icon:'🎨',name:'Творчий проект',         desc:'Почати і завершити щось творче',           xp:40,type:'once',  color:'#c8960c'},
+  {pid:'p12',icon:'🏕️',name:'Прогулянка в природі',  desc:'Парк, ліс, річка — будь-де на природі',   xp:25,type:'repeat',color:'#3d6b4f'},
+  {pid:'p13',icon:'🎵',name:'Послухати новий альбом', desc:'Від першого до останнього треку',          xp:15,type:'repeat',color:'#5b3a7e'},
+  {pid:'p14',icon:'🌙',name:'Рання ніч',              desc:'Лягти до 22:00 і прокинутись о 6:00',     xp:25,type:'repeat',color:'#5b3a7e'},
+  {pid:'p15',icon:'✍️',name:'Написати листа',         desc:'Комусь близькому — від руки або email',   xp:20,type:'once',  color:'#2c5f8a'},
+];
+
+const QUEST_EMOJIS=['🏋️','🏃','🚴','🧗','🎯','📚','✍️','🎸','🎹','🌍','✈️','🏕️','🧘','💊','🌱','🤝','💡','🔥','⭐','🎉','🍳','📝','🌅','🤸','💧','📵','🎨','🎵','🌙','✉️'];
+
+const QUEST_COLORS={once:'#5b3a7e',repeat:'#3d6b4f',custom:'#2c5f8a'};
+
+const QUOTES=['Кожна місія виконана — крок до кращої версії себе.','Не мотивація. Рішення. Потім дія.','Герой не той, хто не падає. Той, хто встає щодня.','Маленькі перемоги складають велику историю.','Твоя дисципліна — твоя суперсила.','Кожен день — нова сторінка квесту.','Іскра горить поки ти діяєш.'];
+
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+
+const KEY='lq_v4';
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||{};}catch{return{}}}
+function save(){localStorage.setItem(KEY,JSON.stringify(S))}
+
+let S=load();
+if(!S.days)          S.days={};
+if(!S.totalXp)       S.totalXp=0;
+if(!S.dragonPts)     S.dragonPts=0;
+if(!S.peakPts)       S.peakPts=0;
+if(!S.lastSeen)      S.lastSeen=null;
+if(!S.todayDate)     S.todayDate=null;
+if(!S.todayCounted)  S.todayCounted=false;
+if(!S.customQuests)  S.customQuests=[];       // user-created quests (always shown)
+// Active pool quest slot
+if(!S.activePoolQuest) S.activePoolQuest=null; // {pid, assignedOn, status:'active'|'done'|'declined', doneOn}
+if(!S.usedPoolPids)  S.usedPoolPids=[];        // pids already used (to avoid repeats)
+
+let cur=new Date(); cur.setHours(0,0,0,0);
+let editingId=null;
+let selectedEmoji=QUEST_EMOJIS[0];
+
+// ══════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════
+
+const dk=d=>d.toISOString().split('T')[0];
+const dkToDate=s=>{const[y,m,d]=s.split('-').map(Number);const dt=new Date(y,m-1,d);dt.setHours(0,0,0,0);return dt};
+const daysDiff=(a,b)=>Math.floor((dkToDate(a)-dkToDate(b))/(1000*60*60*24));
+
+function dd(k){if(!S.days[k])S.days[k]={};return S.days[k]}
+function getLvl(xp){let l=LEVELS[0];for(const x of LEVELS)if(xp>=x.xp)l=x;return l}
+function getNext(xp){for(const x of LEVELS)if(xp<x.xp)return x;return null}
+function getDragon(pts){let d=DRAGON[0];for(const x of DRAGON)if(pts>=x.min)d=x;return d}
+function habitScore(k){const d=S.days[k];if(!d)return null;return HABITS.filter(h=>d[h.id]).length}
+function totalGoodDays(){return Object.keys(S.days).filter(k=>(habitScore(k)||0)>=3).length}
+
+function hStreak(id){
+  let s=0,d=new Date();d.setHours(0,0,0,0);
+  while(true){const k=dk(d);if(S.days[k]?.[id]){s++;d.setDate(d.getDate()-1)}else break}
+  return s;
+}
+function last7h(id){
+  return Array.from({length:7},(_,i)=>{
+    const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-(6-i));
+    return!!(S.days[dk(d)]?.[id]);
+  });
+}
+function isToday(d){const t=new Date();t.setHours(0,0,0,0);return d.getTime()===t.getTime()}
+function fmtDate(d){
+  const D=['Неділя','Понеділок','Вівторок','Середа','Четвер','П\'ятниця','Субота'];
+  const M=['Січня','Лютого','Березня','Квітня','Травня','Червня','Липня','Серпня','Вересня','Жовтня','Листопада','Грудня'];
+  return`${D[d.getDay()]}, ${d.getDate()} ${M[d.getMonth()]}`;
+}
+
+// ── Dragon missed-day penalty ──
+function applyMissedDays(){
+  const todayStr=dk(new Date());
+  if(!S.lastSeen||S.lastSeen===todayStr)return;
+  let d=new Date(S.lastSeen);d.setDate(d.getDate()+1);
+  const yesterday=new Date();yesterday.setHours(0,0,0,0);yesterday.setDate(yesterday.getDate()-1);
+  let pen=0;
+  while(d<=yesterday){if((habitScore(dk(d))||0)<3)pen++;d.setDate(d.getDate()+1);}
+  if(pen>0){S.dragonPts=Math.max(0,S.dragonPts-pen*MISS_PENALTY);save();}
+}
+
+function recalcDragonToday(){
+  const k=dk(new Date()),sc=habitScore(k)||0;
+  if(sc>=3&&!S.todayCounted){
+    S.dragonPts=Math.min(MAX_PTS,S.dragonPts+GOOD_DAY_PTS);
+    S.peakPts=Math.max(S.peakPts,S.dragonPts);
+    S.todayCounted=true;save();
+  }else if(sc<3&&S.todayCounted){
+    S.dragonPts=Math.max(0,S.dragonPts-GOOD_DAY_PTS);
+    S.todayCounted=false;save();
+  }
+}
+
+// ── Pool quest rotation ──
+function getPoolQuestById(pid){return QUEST_POOL.find(q=>q.pid===pid)}
+
+function pickNextPoolQuest(){
+  const todayStr=dk(new Date());
+  // Filter out used pids; if all used, reset
+  let available=QUEST_POOL.filter(q=>!S.usedPoolPids.includes(q.pid));
+  if(available.length===0){S.usedPoolPids=[];available=[...QUEST_POOL];}
+  // Pick random
+  const q=available[Math.floor(Math.random()*available.length)];
+  S.activePoolQuest={pid:q.pid,assignedOn:todayStr,status:'active',doneOn:null};
+  S.usedPoolPids.push(q.pid);
+  save();
+}
+
+function maybeRotatePoolQuest(){
+  const todayStr=dk(new Date());
+  if(!S.activePoolQuest){pickNextPoolQuest();return;}
+  const aq=S.activePoolQuest;
+  if(aq.status==='active')return; // still ongoing
+  // Done or declined — check cooldown
+  if(aq.doneOn){
+    const diff=daysDiff(todayStr,aq.doneOn);
+    if(diff>=QUEST_COOLDOWN_DAYS){pickNextPoolQuest();}
+  }
+}
+
+function isPoolQuestDone(){
+  const aq=S.activePoolQuest;
+  if(!aq||aq.status!=='done')return false;
+  const q=getPoolQuestById(aq.pid);
+  if(!q)return false;
+  if(q.type==='repeat'){
+    // repeat: done today?
+    return aq.doneOn===dk(new Date());
+  }
+  return true; // once: permanently done
+}
+
+// ══════════════════════════════════════════
+// RENDER
+// ══════════════════════════════════════════
+
+function render(){
+  const dateStr=dk(cur),data=dd(dateStr),today=isToday(cur);
+  document.getElementById('nlbl').textContent=fmtDate(cur);
+  document.getElementById('qq').textContent='« '+QUOTES[(cur.getDate()+cur.getMonth()*3)%QUOTES.length]+' »';
+
+  // XP
+  const lvl=getLvl(S.totalXp),nxt=getNext(S.totalXp);
+  const inL=S.totalXp-lvl.xp,need=nxt?nxt.xp-lvl.xp:1;
+  document.getElementById('lvlN').textContent=lvl.n;
+  document.getElementById('cClass').textContent='✦ '+lvl.ua;
+  document.getElementById('xpTxt').textContent=nxt?`${inL}/${need} xp`:'Макс рівень';
+  document.getElementById('xpFill').style.width=(nxt?Math.min(100,(inL/need)*100):100)+'%';
+  document.getElementById('txpN').textContent=S.totalXp;
+
+  // Dragon
+  const drg=getDragon(S.peakPts),pts=S.dragonPts;
+  document.getElementById('dStage').textContent=drg.stage;
+  document.getElementById('dPts').textContent=pts;
+  document.getElementById('dBest').textContent=S.peakPts;
+  document.getElementById('dTotal').textContent=totalGoodDays();
+  document.getElementById('bondPts').textContent=`${pts} / 100`;
+  const fill=document.getElementById('bondFill');
+  fill.style.width=Math.min(100,pts)+'%';
+  fill.className='bond-fill'+(pts<30?' low':pts<60?' mid':'');
+  const moodI=Math.floor(Date.now()/86400000)%drg.moods.length;
+  document.getElementById('dMood').textContent=pts<20&&S.peakPts>0?'😟 Іскра сумує… Поверни звички!':drg.moods[moodI];
+  document.getElementById('dEmoji').textContent=drg.emoji;
+  document.getElementById('dEmoji').className='d-emoji'+(pts<20&&S.peakPts>0?' sleeping':'');
+
+  // HABITS
+  const hlist=document.getElementById('habits');hlist.innerHTML='';
+  for(const h of HABITS){
+    const done=!!data[h.id],s=hStreak(h.id),l7=last7h(h.id),hot=s>=3,past=!today;
+    const row=document.createElement('div');
+    row.className='hrow'+(done?' done':'')+(past?' past':'');
+    row.style.setProperty('--hc',h.color);
+    if(today)row.onclick=()=>toggleHabit(h,dateStr,done);
+    const pips=l7.map((d,i)=>`<div class="pip${d?' lit':''}${i===6?' cur':''}"></div>`).join('');
+    row.innerHTML=`<div class="hemb">${h.icon}</div><div><div class="hname">${h.name}</div><div class="hdesc">${h.desc}</div><div class="hfoot">${s>0?`<span class="sb${hot?' fire':''}">${hot?'🔥':'⚡'} ${s}д підряд</span>`:''}<div class="trail">${pips}</div></div></div><div class="hright"><div class="seal">${done?'✓':''}</div><div class="xpc">${done?'✦ ':''}+${h.xp}xp</div></div>`;
+    hlist.appendChild(row);
+  }
+
+  // QUESTS
+  renderQuests(today);
+
+  // MAP
+  const mgEl=document.getElementById('mg');mgEl.innerHTML='';
+  const DN=['Пн','Вт','Ср','Чт','Пт','Сб','Нд'];
+  for(let i=6;i>=0;i--){
+    const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-i);
+    const k=dk(d),sc=habitScore(k),isTod=isToday(d),di=(d.getDay()+6)%7;
+    let cls='',label='–';
+    if(sc!==null){label=sc+'/'+HABITS.length;if(sc===HABITS.length)cls='perfect';else if(sc>=3)cls='good';else if(sc>=1)cls='meh';}
+    if(isTod)cls+=' now';
+    const c=document.createElement('div');c.className='mday';
+    c.innerHTML=`<div class="mdn">${DN[di]}</div><div class="mhex ${cls}">${label}</div>`;
+    mgEl.appendChild(c);
+  }
+}
+
+function renderQuests(today){
+  const ql=document.getElementById('questList');
+  ql.innerHTML='';
+  const todayStr=dk(new Date());
+
+  // ── POOL QUEST ──
+  const aq=S.activePoolQuest;
+  if(aq){
+    const pq=getPoolQuestById(aq.pid);
+    if(pq){
+      if(aq.status==='active'){
+        ql.appendChild(buildQuestCard(pq,aq,today,'pool'));
+      }else{
+        // Done or declined — show cooldown / incoming
+        const diff=aq.doneOn?daysDiff(todayStr,aq.doneOn):0;
+        const remaining=QUEST_COOLDOWN_DAYS-diff;
+        if(remaining>0){
+          const cd=document.createElement('div');
+          cd.className='q-cooldown';
+          const verb=aq.status==='done'?'Виконано':'Відхилено';
+          cd.innerHTML=`<div class="q-cd-title">⏳ ${verb}: «${pq.name}»</div>
+            <div class="q-cd-sub">Новий квест з'явиться через ${remaining} ${remaining===1?'день':'дні'}</div>`;
+          ql.appendChild(cd);
+        }else{
+          // Should have rotated already, show incoming hint
+          const inc=document.createElement('div');
+          inc.className='q-incoming';
+          inc.innerHTML=`<div class="q-incoming-icon">🗺️</div><div><div class="q-incoming-title">Новий квест готується…</div><div class="q-incoming-sub">Перезавантаж сторінку або відкрий завтра</div></div>`;
+          ql.appendChild(inc);
+        }
+      }
+    }
+  }else{
+    // No quest yet
+    const inc=document.createElement('div');
+    inc.className='q-incoming';
+    inc.innerHTML=`<div class="q-incoming-icon">🗺️</div><div><div class="q-incoming-title">Квест призначається…</div><div class="q-incoming-sub">Перезавантаж сторінку</div></div>`;
+    ql.appendChild(inc);
+  }
+
+  // ── CUSTOM QUESTS ──
+  for(const cq of S.customQuests){
+    const isDone=cq.type==='repeat'?cq.completedOn?.includes(todayStr):(cq.completedOn?.length>0);
+    ql.appendChild(buildQuestCard(cq,{status:isDone?'done':'active'},today,'custom'));
+  }
+}
+
+function buildQuestCard(q,slot,today,source){
+  const todayStr=dk(new Date());
+  const isDone=slot.status==='done'||(source==='custom'&&(q.type==='repeat'?q.completedOn?.includes(todayStr):(q.completedOn?.length>0)));
+  const isDeclined=slot.status==='declined';
+  const color=source==='custom'?QUEST_COLORS.custom:(QUEST_COLORS[q.type]||QUEST_COLORS.once);
+
+  const card=document.createElement('div');
+  card.className='qcard'+(isDone?' q-done':'')+(isDeclined?' q-declined':'');
+  card.style.setProperty('--qc',color);
+
+  const tagLabel=q.type==='repeat'?'Повторюваний':'Разовий';
+  const tagCls=q.type==='repeat'?'repeat-t':'';
+  const srcTag=source==='pool'?'<span class="qtag pool">Квест дня</span>':source==='custom'?'<span class="qtag custom">Мій квест</span>':'';
+
+  const xpColor=isDone?`color:${color}`:'';
+
+  card.innerHTML=`
+    <div class="qtop">
+      <div class="qemb">${q.icon}</div>
+      <div class="qmid">
+        <div class="qname">${q.name}</div>
+        <div class="qdesc">${q.desc||''}</div>
+        <div class="qmeta">${srcTag}<span class="qtag ${tagCls}">${tagLabel}</span></div>
+      </div>
+      <div class="qright">
+        <div class="qxp-big" style="${xpColor}">+${q.xp}</div>
+        <div class="qxp-lbl">xp</div>
+      </div>
+    </div>`;
+
+  // Action buttons
+  if(today&&!isDeclined){
+    const actions=document.createElement('div');
+    actions.className='q-actions';
+
+    if(!isDone){
+      const btnC=document.createElement('button');
+      btnC.className='q-btn complete';
+      btnC.textContent='✓ Виконати';
+      btnC.onclick=()=>source==='pool'?completePoolQuest():completeCustomQuest(q.id);
+      actions.appendChild(btnC);
+
+      if(source==='pool'){
+        const btnD=document.createElement('button');
+        btnD.className='q-btn decline';
+        btnD.textContent='✗ Відмовитись';
+        btnD.onclick=()=>declinePoolQuest();
+        actions.appendChild(btnD);
+      }
+    }else{
+      const done=document.createElement('div');
+      done.style.cssText=`font-family:Inter,sans-serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:${color};padding:4px 0`;
+      done.textContent=q.type==='repeat'?'✓ Виконано сьогодні':'✓ Завершено';
+      actions.appendChild(done);
+    }
+
+    if(source==='custom'){
+      const btnE=document.createElement('button');
+      btnE.className='q-btn edit-q';
+      btnE.textContent='✎ Редагувати';
+      btnE.onclick=()=>openEditQuest(q.id);
+      actions.appendChild(btnE);
+    }
+
+    card.appendChild(actions);
+  }
+
+  return card;
+}
+
+// ══════════════════════════════════════════
+// HABIT ACTIONS
+// ══════════════════════════════════════════
+
+function toggleHabit(h,dateStr,wasDone){
+  const prevLvl=getLvl(S.totalXp),prevPeak=S.peakPts,prevDrg=getDragon(prevPeak);
+  if(wasDone){S.days[dateStr][h.id]=false;S.totalXp=Math.max(0,S.totalXp-h.xp);}
+  else{S.days[dateStr][h.id]=true;S.totalXp+=h.xp;floatXp(h.xp,h.color);}
+  save();recalcDragonToday();
+  const newLvl=getLvl(S.totalXp),newDrg=getDragon(S.peakPts);
+  if(newLvl.n>prevLvl.n)showToast(`Рівень ${newLvl.n} — ${newLvl.ua}!`,'⚔️ Новий рівень!');
+  if(!wasDone&&newDrg.min>prevDrg.min){
+    document.getElementById('dragonCard').classList.add('evolving');
+    setTimeout(()=>document.getElementById('dragonCard').classList.remove('evolving'),1800);
+    setTimeout(()=>showToast(`Іскра стала "${newDrg.stage}"! ${newDrg.emoji}`,'🐉 Еволюція!'),400);
+  }
+  render();
+}
+
+// ══════════════════════════════════════════
+// POOL QUEST ACTIONS
+// ══════════════════════════════════════════
+
+function completePoolQuest(){
+  if(!S.activePoolQuest)return;
+  const prevLvl=getLvl(S.totalXp);
+  const pq=getPoolQuestById(S.activePoolQuest.pid);
+  S.activePoolQuest.status='done';
+  S.activePoolQuest.doneOn=dk(new Date());
+  S.totalXp+=pq.xp;
+  save();
+  floatXp(pq.xp,'#5b3a7e');
+  const newLvl=getLvl(S.totalXp);
+  if(newLvl.n>prevLvl.n)showToast(`Рівень ${newLvl.n} — ${newLvl.ua}!`,'⚔️ Новий рівень!');
+  else showToast(`+${pq.xp} xp! Новий квест за ${QUEST_COOLDOWN_DAYS} дні.`,'🗺️ Квест виконано!');
+  render();
+}
+
+function declinePoolQuest(){
+  if(!S.activePoolQuest)return;
+  const pq=getPoolQuestById(S.activePoolQuest.pid);
+  S.activePoolQuest.status='declined';
+  S.activePoolQuest.doneOn=dk(new Date());
+  save();
+  showToast(`Квест відхилено. Новий за ${QUEST_COOLDOWN_DAYS} дні.`,'🌿 Без осуду');
+  render();
+}
+
+// ══════════════════════════════════════════
+// CUSTOM QUEST ACTIONS
+// ══════════════════════════════════════════
+
+function completeCustomQuest(id){
+  const q=S.customQuests.find(x=>x.id===id);
+  if(!q)return;
+  const todayStr=dk(new Date());
+  if(!q.completedOn)q.completedOn=[];
+  if(q.completedOn.includes(todayStr))return;
+  const prevLvl=getLvl(S.totalXp);
+  q.completedOn.push(todayStr);
+  S.totalXp+=q.xp;
+  save();
+  floatXp(q.xp,'#2c5f8a');
+  const newLvl=getLvl(S.totalXp);
+  if(newLvl.n>prevLvl.n)showToast(`Рівень ${newLvl.n} — ${newLvl.ua}!`,'⚔️ Новий рівень!');
+  else showToast(`+${q.xp} xp за "${q.name}"!`,'🗺️ Виконано!');
+  render();
+}
+
+// ══════════════════════════════════════════
+// MODAL
+// ══════════════════════════════════════════
+
+function openAddQuest(){
+  editingId=null;selectedEmoji=QUEST_EMOJIS[0];
+  document.getElementById('modalTitle').textContent='Новий квест';
+  document.getElementById('qName').value='';
+  document.getElementById('qDesc').value='';
+  document.getElementById('qXp').value='25';
+  document.getElementById('qType').value='once';
+  document.getElementById('btnDel').style.display='none';
+  buildEmojiPicker();
+  document.getElementById('modalOverlay').classList.add('show');
+}
+
+function openEditQuest(id){
+  const q=S.customQuests.find(x=>x.id===id);if(!q)return;
+  editingId=id;selectedEmoji=q.icon;
+  document.getElementById('modalTitle').textContent='Редагувати квест';
+  document.getElementById('qName').value=q.name;
+  document.getElementById('qDesc').value=q.desc||'';
+  document.getElementById('qXp').value=q.xp;
+  document.getElementById('qType').value=q.type;
+  document.getElementById('btnDel').style.display='';
+  buildEmojiPicker();
+  document.getElementById('modalOverlay').classList.add('show');
+}
+
+function buildEmojiPicker(){
+  const wrap=document.getElementById('emojiPicks');wrap.innerHTML='';
+  for(const e of QUEST_EMOJIS){
+    const btn=document.createElement('button');
+    btn.className='ep'+(e===selectedEmoji?' active':'');
+    btn.textContent=e;
+    btn.onclick=()=>{selectedEmoji=e;buildEmojiPicker();};
+    wrap.appendChild(btn);
+  }
+}
+
+function saveQuest(){
+  const name=document.getElementById('qName').value.trim();
+  if(!name){document.getElementById('qName').focus();return;}
+  const xp=parseInt(document.getElementById('qXp').value);
+  const type=document.getElementById('qType').value;
+  const desc=document.getElementById('qDesc').value.trim();
+  if(editingId){
+    const q=S.customQuests.find(x=>x.id===editingId);
+    if(q){q.icon=selectedEmoji;q.name=name;q.desc=desc;q.xp=xp;q.type=type;}
+  }else{
+    S.customQuests.push({id:'cq_'+Date.now(),icon:selectedEmoji,name,desc,xp,type,completedOn:[]});
+  }
+  save();closeModal();render();
+}
+
+function deleteQuest(){
+  if(!editingId||!confirm('Видалити квест? XP залишиться.'))return;
+  S.customQuests=S.customQuests.filter(x=>x.id!==editingId);
+  save();closeModal();render();
+}
+
+function closeModal(){document.getElementById('modalOverlay').classList.remove('show')}
+document.getElementById('modalOverlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal()});
+
+// ══════════════════════════════════════════
+// MISC
+// ══════════════════════════════════════════
+
+function chDay(d){cur=new Date(cur);cur.setDate(cur.getDate()+d);cur.setHours(0,0,0,0);render()}
+function goToday(){cur=new Date();cur.setHours(0,0,0,0);render()}
+function resetToday(){
+  if(!confirm('Скинути звички на сьогодні?'))return;
+  const k=dk(new Date());
+  for(const h of HABITS)if(S.days[k]?.[h.id])S.totalXp=Math.max(0,S.totalXp-h.xp);
+  S.days[k]={};
+  if(S.todayCounted){S.dragonPts=Math.max(0,S.dragonPts-GOOD_DAY_PTS);S.todayCounted=false;}
+  save();render();
+}
+function floatXp(amt,color){
+  const el=document.createElement('div');el.className='xpfl';
+  el.style.color=color||'#f0b429';
+  el.textContent='+'+amt+' xp';
+  el.style.left=(Math.random()*50+25)+'%';el.style.top='40%';
+  document.body.appendChild(el);setTimeout(()=>el.remove(),1600);
+}
+function showToast(body,title){
+  document.getElementById('tt').textContent=title;
+  document.getElementById('tb').textContent=body;
+  const t=document.getElementById('toast');t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),4500);
+}
+
+// ══════════════════════════════════════════
+// EXPORT / IMPORT
+// ══════════════════════════════════════════
+
+function exportData(){
+  // Build sync-friendly snapshot for Scriptable widget
+  const todayStr=dk(new Date());
+  const todayData=S.days[todayStr]||{};
+  const habitsDone=HABITS.filter(h=>todayData[h.id]).length;
+  const aq=S.activePoolQuest;
+  const poolQ=aq?getPoolQuestById(aq.pid):null;
+  const drg=getDragon(S.peakPts);
+
+  const sync={
+    // Full state for restore
+    ...S,
+    // Widget snapshot (always fresh)
+    widget:{
+      updatedAt:new Date().toISOString(),
+      todayStr,
+      habitsDone,
+      habitsTotal:HABITS.length,
+      habits:HABITS.map(h=>({id:h.id,name:h.name,icon:h.icon,done:!!todayData[h.id]})),
+      dragon:{emoji:drg.emoji,stage:drg.stage,pts:S.dragonPts,peak:S.peakPts},
+      quest:poolQ&&aq.status==='active'?{name:poolQ.name,icon:poolQ.icon,xp:poolQ.xp,status:'active'}:
+            poolQ&&aq.status==='done'?{name:poolQ.name,icon:poolQ.icon,xp:poolQ.xp,status:'done'}:null,
+      level:getLvl(S.totalXp).n,
+      levelName:getLvl(S.totalXp).ua,
+      totalXp:S.totalXp,
+    }
+  };
+
+  const data=JSON.stringify(sync,null,2);
+  const blob=new Blob([data],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  // Fixed filename so Scriptable always reads the same file
+  a.href=url;
+  a.download='life-quest-sync.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Збережи файл у Файли → iCloud Drive 📂','💾 life-quest-sync.json');
+}
+
+function importData(event){
+  const file=event.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const parsed=JSON.parse(e.target.result);
+      // Validate it looks like our data
+      if(typeof parsed.totalXp==='undefined'){
+        alert('Файл не схожий на резервну копію Life Quest. Спробуй інший файл.');
+        return;
+      }
+      if(!confirm(`Відновити прогрес з файлу?\nXP: ${parsed.totalXp} · Рівень: ${getLvl(parsed.totalXp||0).n}\n\nПоточний прогрес буде замінено.`))return;
+      Object.assign(S,parsed);
+      save();
+      render();
+      showToast('Прогрес відновлено успішно! 🐉','✦ Ласкаво повернулась');
+    }catch{
+      alert('Не вдалося прочитати файл. Переконайся що це правильний .json файл.');
+    }
+  };
+  reader.readAsText(file);
+  // Reset input so same file can be re-imported
+  event.target.value='';
+}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+
+applyMissedDays();
+maybeRotatePoolQuest();
+S.lastSeen=dk(new Date());
+const tStr=dk(new Date());
+if(S.todayDate!==tStr){S.todayDate=tStr;S.todayCounted=false;}
+const sc0=habitScore(tStr)||0;
+if(sc0>=3&&!S.todayCounted){
+  S.dragonPts=Math.min(MAX_PTS,S.dragonPts+GOOD_DAY_PTS);
+  S.peakPts=Math.max(S.peakPts,S.dragonPts);
+  S.todayCounted=true;
+}
+save();
+render();
+</script>
+</body>
+</html>
