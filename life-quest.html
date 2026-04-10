@@ -330,6 +330,78 @@ body{background:var(--parch2);color:var(--ink);font-family:'Crimson Pro',serif;m
   100%{box-shadow:0 0 0 0 rgba(200,150,12,0)}}
 .camp-card.milestone-flash{animation:milestone-glow 1.6s ease-out}
 
+/* TREASURE */
+.treasure-card{background:linear-gradient(135deg,var(--parch),color-mix(in srgb,var(--gold) 8%,var(--parch)));
+  border:2px solid var(--gold);border-radius:var(--r);padding:20px 22px;margin-bottom:16px;
+  box-shadow:0 4px 24px rgba(200,150,12,.15);position:relative;overflow:hidden;text-align:center;cursor:pointer}
+.treasure-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,transparent,var(--gold2),var(--gold3),var(--gold2),transparent)}
+.treasure-box{font-size:52px;line-height:1;margin-bottom:8px;display:inline-block;
+  transition:transform .15s;transform-origin:bottom center}
+.treasure-card:hover .treasure-box{transform:translateY(-3px)}
+.treasure-title{font-family:'Cinzel',serif;font-size:15px;color:var(--gold);margin-bottom:4px}
+.treasure-sub{font-family:'Inter',sans-serif;font-size:11px;color:var(--ink4);font-style:italic}
+.treasure-tap{font-family:'Inter',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--gold2);margin-top:10px;animation:pulse-text 1.5s ease-in-out infinite}
+@keyframes pulse-text{0%,100%{opacity:.6}50%{opacity:1}}
+
+/* Treasure open modal */
+.treward-icon{font-size:64px;line-height:1;margin:8px 0;animation:pop-in .4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pop-in{0%{transform:scale(0);opacity:0}100%{transform:scale(1);opacity:1}}
+.treward-name{font-family:'Cinzel',serif;font-size:20px;color:var(--ink);margin:8px 0 4px}
+.treward-sub{font-family:'Inter',sans-serif;font-size:11px;color:var(--ink4);font-style:italic;margin-bottom:16px}
+@keyframes chest-shake{0%,100%{transform:rotate(0)}20%{transform:rotate(-8deg)}40%{transform:rotate(8deg)}60%{transform:rotate(-5deg)}80%{transform:rotate(5deg)}}
+.treasure-box.shaking{animation:chest-shake .5s ease-in-out}
+@keyframes confetti-fall{0%{transform:translateY(-20px) rotate(0);opacity:1}100%{transform:translateY(60px) rotate(360deg);opacity:0}}
+.confetti-piece{position:absolute;width:8px;height:8px;border-radius:2px;animation:confetti-fall .8s ease-out forwards;pointer-events:none}
+
+/* STATS MODAL */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.stat-box{background:var(--parch2);border:1.5px solid var(--parch4);border-radius:12px;padding:10px 12px;text-align:center}
+.stat-box-n{font-family:'Cinzel',serif;font-size:22px;color:var(--ink2);line-height:1}
+.stat-box-l{font-family:'Inter',sans-serif;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--ink4);margin-top:3px}
+.stats-section-title{font-family:'Inter',sans-serif;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--ink4);margin:10px 0 6px}
+.habit-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.habit-bar-label{font-size:13px;color:var(--ink2);width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0}
+.habit-bar-bg{flex:1;height:7px;background:var(--parch3);border-radius:99px;overflow:hidden}
+.habit-bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--gold),var(--gold2))}
+.habit-bar-cnt{font-family:'Cinzel',serif;font-size:11px;color:var(--ink4);width:28px;text-align:right;flex-shrink:0}
+.mood-chart{display:flex;gap:3px;align-items:flex-end;height:60px;margin-bottom:4px}
+.mood-bar{flex:1;border-radius:4px 4px 0 0;min-height:4px;transition:height .4s}
+.mood-chart-labels{display:flex;gap:3px;font-family:Inter,sans-serif;font-size:8px;color:var(--ink4);text-align:center}
+.mood-chart-labels span{flex:1}
+
+/* DIARY */
+.diary-card{background:var(--parch);border:2px solid var(--parch4);border-radius:var(--r);
+  padding:20px 22px;margin-bottom:16px;box-shadow:var(--shadow);position:relative}
+.diary-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,transparent,var(--parch4),var(--gold3),var(--parch4),transparent)}
+.diary-mood-row{display:flex;gap:6px;margin-bottom:12px}
+.mood-btn{background:transparent;border:1.5px solid var(--parch4);border-radius:10px;
+  font-size:20px;padding:6px 10px;cursor:pointer;transition:all .2s;flex:1;text-align:center}
+.mood-btn:hover{border-color:var(--gold);transform:scale(1.1)}
+.mood-btn.active{border-color:var(--gold);background:var(--parch3);transform:scale(1.1)}
+.diary-textarea{width:100%;background:var(--parch2);border:1.5px solid var(--parch4);
+  border-radius:10px;padding:12px 14px;font-family:'Crimson Pro',serif;font-size:15px;
+  color:var(--ink);outline:none;resize:none;height:90px;transition:border .2s;line-height:1.6}
+.diary-textarea:focus{border-color:var(--gold)}
+.diary-textarea::placeholder{color:var(--ink4);font-style:italic}
+.diary-footer{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+.diary-hint{font-family:'Inter',sans-serif;font-size:10px;color:var(--ink4);font-style:italic}
+.diary-archive-btn{background:transparent;border:1px solid var(--parch4);color:var(--ink4);
+  font-family:'Inter',sans-serif;font-size:10px;letter-spacing:1px;text-transform:uppercase;
+  padding:5px 12px;border-radius:99px;cursor:pointer;transition:all .2s}
+.diary-archive-btn:hover{border-color:var(--gold);color:var(--gold)}
+
+/* Diary archive modal */
+.diary-entry{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start;
+  padding:12px 0;border-bottom:1px solid var(--parch3)}
+.diary-entry:last-child{border-bottom:none}
+.diary-entry-date{font-family:'Inter',sans-serif;font-size:9px;letter-spacing:2px;
+  text-transform:uppercase;color:var(--ink4);margin-bottom:4px}
+.diary-entry-text{font-size:14px;color:var(--ink2);line-height:1.6}
+.diary-entry-mood{font-size:22px;flex-shrink:0;margin-top:2px}
+
 @media(max-width:560px){
   .cg{grid-template-columns:auto 1fr;gap:12px}
   .c-right{flex-direction:row;align-items:center;grid-column:1/-1;justify-content:space-between}
@@ -392,9 +464,16 @@ body{background:var(--parch2);color:var(--ink);font-family:'Crimson Pro',serif;m
       <div class="xpl"><span>До наступного рівня</span><span id="xpTxt">0/150 xp</span></div>
       <div class="xpbg"><div class="xpfill" id="xpFill" style="width:0%"></div></div>
     </div>
-    <div class="c-right">
-      <div class="lvlb"><div class="lvln" id="lvlN">1</div><div class="lvlw">рівень</div></div>
-      <div class="txp"><div class="txpn" id="txpN">0</div><div class="txpl">Всього XP</div></div>
+      <div class="c-right">
+      <div style="position:relative">
+        <div class="lvlb"><div class="lvln" id="lvlN">1</div><div class="lvlw">рівень</div></div>
+        <button onclick="openStats()" style="position:absolute;top:-8px;right:-10px;background:var(--parch);border:1.5px solid var(--parch4);border-radius:50%;width:22px;height:22px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow);padding:0">💎</button>
+      </div>
+      <div class="txp">
+        <div class="txpn" id="txpN">0</div>
+        <div class="txpl">Всього XP</div>
+      </div>
+      <div id="comboBar" style="display:none;text-align:right;font-family:Inter,sans-serif;font-size:10px;color:var(--gold);letter-spacing:1px;margin-top:2px"></div>
     </div>
   </div>
 </div>
@@ -437,6 +516,32 @@ body{background:var(--parch2);color:var(--ink);font-family:'Crimson Pro',serif;m
 <div class="map-card">
   <div class="sec"><span class="sec-i">📅</span><span class="sec-t">Тиждень</span><div class="sec-l"></div></div>
   <div class="mg" id="mg"></div>
+</div>
+
+<!-- TREASURE -->
+<div id="treasureSection" style="display:none">
+  <div class="sec">
+    <span class="sec-i">🎁</span><span class="sec-t">Скарбниця</span><div class="sec-l"></div>
+  </div>
+  <div class="treasure-card" id="treasureCard" onclick="openTreasure()">
+    <div class="treasure-box" id="treasureBox">📦</div>
+    <div class="treasure-title" id="treasureTitle">Скринька готова!</div>
+    <div class="treasure-sub" id="treasureSub"></div>
+    <div class="treasure-tap">Натисни щоб відкрити ✦</div>
+  </div>
+</div>
+
+<!-- DIARY -->
+<div class="sec">
+  <span class="sec-i">📜</span><span class="sec-t">Щоденник</span><div class="sec-l"></div>
+</div>
+<div class="diary-card">
+  <div class="diary-mood-row" id="moodRow"></div>
+  <textarea class="diary-textarea" id="diaryText" placeholder="Як пройшов день… що відчуваєш… одне слово або цілий абзац — тут тільки твоє"></textarea>
+  <div class="diary-footer">
+    <span class="diary-hint" id="diaryHint">Автоматично збережеться сьогодні</span>
+    <button class="diary-archive-btn" onclick="openDiaryArchive()">📚 Архів</button>
+  </div>
 </div>
 
 <!-- BACKUP PANEL -->
@@ -536,6 +641,58 @@ body{background:var(--parch2);color:var(--ink);font-family:'Crimson Pro',serif;m
       <button class="btn-cancel" onclick="closeHabitModal()">Скасувати</button>
       <button class="btn-del" id="btnHabitDel" onclick="deleteHabit()" style="display:none">Видалити</button>
       <button class="btn-save" onclick="saveHabit()">Зберегти</button>
+    </div>
+  </div>
+</div>
+
+<!-- ACHIEVEMENTS MODAL -->
+<div class="modal-overlay" id="achieveModalOverlay">
+  <div class="modal">
+    <div class="modal-title">🏅 Досягнення</div>
+    <div id="achieveList" style="display:flex;flex-direction:column;gap:10px;max-height:60vh;overflow-y:auto;margin-top:4px"></div>
+    <div class="modal-btns" style="margin-top:16px">
+      <button class="btn-cancel" onclick="document.getElementById('achieveModalOverlay').classList.remove('show')">Закрити</button>
+    </div>
+  </div>
+</div>
+
+<!-- TREASURE REWARD MODAL -->
+<div class="modal-overlay" id="trewardOverlay">
+  <div class="modal" style="text-align:center">
+    <div style="font-family:Inter,sans-serif;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:4px" id="trewardType"></div>
+    <div class="treward-icon" id="trewardIcon">🎁</div>
+    <div class="treward-name" id="trewardName"></div>
+    <div class="treward-sub">Ти це заробила ✨</div>
+    <div style="font-size:13px;color:var(--ink3);font-style:italic;margin-bottom:16px">Побалуй себе — без почуття провини</div>
+    <div class="modal-btns">
+      <button class="btn-save" onclick="closeTreasure()">Прийняти нагороду 🎉</button>
+    </div>
+  </div>
+</div>
+
+<!-- STATS MODAL -->
+<div class="modal-overlay" id="statsModalOverlay">
+  <div class="modal" style="max-height:90vh;overflow-y:auto">
+    <div class="stats-grid" id="statsGrid" style="margin-top:4px"></div>
+    <div class="stats-section-title">Звички за весь час</div>
+    <div id="statsHabits"></div>
+    <div class="stats-section-title">Настрій за 30 днів</div>
+    <div class="mood-chart" id="moodChart"></div>
+    <div class="mood-chart-labels" id="moodChartLabels"></div>
+    <div class="modal-btns" style="margin-top:16px">
+      <button class="btn-cancel" onclick="document.getElementById('statsModalOverlay').classList.remove('show')">Закрити</button>
+      <button class="btn-save" style="background:linear-gradient(135deg,var(--purple),var(--purple2));border:none;flex:0" onclick="document.getElementById('statsModalOverlay').classList.remove('show');openAchievements()">🏅 Ачівки</button>
+    </div>
+  </div>
+</div>
+
+<!-- DIARY ARCHIVE MODAL -->
+<div class="modal-overlay" id="diaryModalOverlay">
+  <div class="modal">
+    <div class="modal-title">📚 Архів щоденника</div>
+    <div id="diaryArchiveList" style="max-height:65vh;overflow-y:auto;margin-top:8px"></div>
+    <div class="modal-btns" style="margin-top:16px">
+      <button class="btn-cancel" onclick="document.getElementById('diaryModalOverlay').classList.remove('show')">Закрити</button>
     </div>
   </div>
 </div>
@@ -665,6 +822,100 @@ const QUEST_COLORS={once:'#5b3a7e',repeat:'#3d6b4f',custom:'#2c5f8a',side:'#8b45
 
 const QUOTES=['Кожна місія виконана — крок до кращої версії себе.','Не мотивація. Рішення. Потім дія.','Герой не той, хто не падає. Той, хто встає щодня.','Маленькі перемоги складають велику историю.','Твоя дисципліна — твоя суперсила.','Кожен день — нова сторінка квесту.','Іскра горить поки ти діяєш.'];
 
+// ── Treasure rewards ──
+const REWARDS_SMALL=[
+  {icon:'☕',name:'Улюблена кава'},
+  {icon:'🍫',name:'Шоколадка'},
+  {icon:'🧁',name:'Тістечко'},
+  {icon:'🍵',name:'Чай у тиші'},
+  {icon:'🍦',name:'Морозиво'},
+  {icon:'🛁',name:'Піняна ванна'},
+  {icon:'💅',name:'Манікюр вдома'},
+  {icon:'🕯️',name:'Вечір зі свічками'},
+  {icon:'🎵',name:'Новий плейлист'},
+  {icon:'📖',name:'Глава книги в ліжку'},
+];
+const REWARDS_BIG=[
+  {icon:'💆',name:'Масаж'},
+  {icon:'🛍️',name:'Щось нове в одяг'},
+  {icon:'🍕',name:'Улюблена їжа з доставкою'},
+  {icon:'💐',name:'Квіти собі'},
+  {icon:'🎬',name:'Серіал марафон'},
+  {icon:'💄',name:'Косметика яку хотіла'},
+  {icon:'🌿',name:'SPA день вдома'},
+  {icon:'🍣',name:'Похід в улюблений ресторан'},
+];
+
+// ── Combo ──
+const COMBO_LEVELS=[
+  {days:3,  mult:1.25, label:'х1.25',icon:'🔥'},
+  {days:7,  mult:1.5,  label:'х1.5', icon:'🔥🔥'},
+  {days:14, mult:2.0,  label:'х2',   icon:'🔥🔥🔥'},
+];
+function getCombo(){
+  const streak=S.combo?.streak||0;
+  let cur=null;
+  for(const c of COMBO_LEVELS) if(streak>=c.days) cur=c;
+  return cur; // null if no combo active
+}
+function getComboMult(){return getCombo()?.mult||1;}
+
+// ── Achievements ──
+const ACHIEVEMENTS=[
+  {id:'first_habit',  icon:'🌱', name:'Перший крок',      desc:'Виконати першу звичку',                check:()=>Object.keys(S.days).some(k=>Object.values(S.days[k]||{}).some(Boolean))},
+  {id:'streak7',      icon:'🔥', name:'На хвилі',         desc:'7 днів підряд з 3+ звичками',          check:()=>(S.combo?.streak||0)>=7},
+  {id:'streak14',     icon:'⚡', name:'Невпинна',         desc:'14 днів підряд з 3+ звичками',         check:()=>(S.combo?.streak||0)>=14},
+  {id:'streak30',     icon:'💎', name:'Легенда',          desc:'30 днів підряд з 3+ звичками',         check:()=>(S.combo?.streak||0)>=30},
+  {id:'read20',       icon:'📖', name:'Книжковий хробак', desc:'Читання виконано 20 разів',             check:()=>Object.keys(S.days).filter(k=>S.days[k]?.read).length>=20},
+  {id:'bed10',        icon:'🌙', name:'Нічна фея',        desc:'Відбій вчасно 10 разів',               check:()=>Object.keys(S.days).filter(k=>S.days[k]?.bed).length>=10},
+  {id:'first_mission',icon:'🗺️', name:'Перша місія',     desc:'Завершити першу місію',                check:()=>(S.archivedCamps||[]).length>=1},
+  {id:'dragon2',      icon:'🐲', name:'Друг дракона',     desc:'Іскра досягла стадії Дракончик',       check:()=>calcDragonPts()>=40},
+  {id:'dragon4',      icon:'✨', name:'Легендарний зв\'язок',desc:'Іскра стала Легендарною',           check:()=>calcDragonPts()>=95},
+  {id:'five_achiev',  icon:'🏆', name:'Колекціонер',      desc:'Відкрити 5 досягнень',                 check:()=>(S.achievements||[]).length>=5},
+  {id:'gooddays50',   icon:'🌟', name:'Майстер звичок',   desc:'50 хороших днів всього',               check:()=>Object.keys(S.days).filter(k=>(Object.values(S.days[k]||{}).filter(Boolean).length)>=3).length>=50},
+  {id:'combo14',      icon:'💪', name:'Незламна',         desc:'Combo 14 днів',                        check:()=>(S.combo?.streak||0)>=14},
+];
+
+function checkAchievements(){
+  let newOnes=[];
+  for(const a of ACHIEVEMENTS){
+    if(!(S.achievements||[]).includes(a.id)&&a.check()){
+      if(!S.achievements)S.achievements=[];
+      S.achievements.push(a.id);
+      newOnes.push(a);
+    }
+  }
+  if(newOnes.length){
+    save();
+    // Show one by one with delay
+    newOnes.forEach((a,i)=>{
+      setTimeout(()=>showToast(`"${a.name}" — ${a.desc}`,'🏅 Нове досягнення!'),i*2000);
+    });
+  }
+}
+
+function updateCombo(){
+  const todayStr=dk(new Date());
+  const todaySc=(()=>{const d=S.days[todayStr];if(!d)return 0;return getHabits().filter(h=>d[h.id]).length;})();
+  if(todaySc<3)return; // not a good day yet, don't update combo
+  if(!S.combo)S.combo={streak:0,lastDate:null};
+  if(S.combo.lastDate===todayStr)return; // already counted today
+  const yesterday=new Date();yesterday.setDate(yesterday.getDate()-1);
+  const yStr=dk(yesterday);
+  if(S.combo.lastDate===yStr){
+    S.combo.streak+=1; // continuing streak
+  }else{
+    S.combo.streak=1; // new streak
+  }
+  S.combo.lastDate=todayStr;
+  save();
+  // Show combo milestone toast
+  const c=getCombo();
+  if(c&&[3,7,14,30].includes(S.combo.streak)){
+    showToast(`${S.combo.streak} днів підряд! Бонус ${c.label} до XP 🔥`,'⚡ Combo!');
+  }
+}
+
 // ══════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════
@@ -684,8 +935,13 @@ if(!S.activePoolQuest) S.activePoolQuest=null;
 if(!S.usedPoolPids)  S.usedPoolPids=[];
 if(!S.activeSideQuest) S.activeSideQuest=null; // {pid, assignedOn, doneOn}
 if(!S.usedSidePids)  S.usedSidePids=[];
-if(!S.campaigns)     S.campaigns=[];   // active campaigns
-if(!S.archivedCamps) S.archivedCamps=[];// completed campaigns
+if(!S.campaigns)     S.campaigns=[];
+if(!S.archivedCamps) S.archivedCamps=[];
+if(!S.achievements)  S.achievements=[];
+if(!S.combo)         S.combo={streak:0,lastDate:null};
+if(!S.diary)         S.diary={};
+if(!S.diaryArchive)  S.diaryArchive=[];
+if(!S.treasure)      S.treasure={lastWeek:null,lastBigWeek:null,pending:null};
 
 // Актуальний список звичок: або дефолт, або збережений користувачем
 function getHabits(){return S.customHabits||DEFAULT_HABITS;}
@@ -883,6 +1139,19 @@ function render(){
   document.getElementById('xpTxt').textContent=nxt?`${inL}/${need} xp`:'Макс рівень';
   document.getElementById('xpFill').style.width=(nxt?Math.min(100,(inL/need)*100):100)+'%';
   document.getElementById('txpN').textContent=S.totalXp;
+
+  // Combo bar
+  const combo=getCombo();
+  const comboBar=document.getElementById('comboBar');
+  if(combo&&(S.combo?.streak||0)>0){
+    comboBar.style.display='block';
+    comboBar.textContent=`${combo.icon} ${S.combo.streak}д · ${combo.label} XP`;
+  }else if((S.combo?.streak||0)>0){
+    comboBar.style.display='block';
+    comboBar.textContent=`🔥 ${S.combo.streak}д підряд`;
+  }else{
+    comboBar.style.display='none';
+  }
 
   // Dragon
   renderDragon();
@@ -1142,12 +1411,23 @@ function completeSideCustomQuest(id){
 function toggleHabit(h,dateStr,wasDone){
   const prevLvl=getLvl(S.totalXp);
   const ptsBefore=calcDragonPts();
-  if(wasDone){S.days[dateStr][h.id]=false;S.totalXp=Math.max(0,S.totalXp-h.xp);}
-  else{S.days[dateStr][h.id]=true;S.totalXp+=h.xp;floatXp(h.xp,h.color);}
+  if(wasDone){
+    S.days[dateStr][h.id]=false;
+    S.totalXp=Math.max(0,S.totalXp-h.xp);
+  }else{
+    S.days[dateStr][h.id]=true;
+    const mult=getComboMult();
+    const earned=Math.round(h.xp*mult);
+    S.totalXp+=earned;
+    floatXp(earned,h.color,mult>1?getCombo().icon:'');
+    updateCombo();
+  }
   save();
   const newLvl=getLvl(S.totalXp);
   if(newLvl.n>prevLvl.n)showToast(`Рівень ${newLvl.n} — ${newLvl.ua}!`,'⚔️ Новий рівень!');
   if(!wasDone) checkDragonEvolve(ptsBefore);
+  checkAchievements();
+  checkTreasure();
   render();
 }
 
@@ -1342,10 +1622,10 @@ function resetToday(){
   S.days[k]={};
   save();render();
 }
-function floatXp(amt,color){
+function floatXp(amt,color,comboIcon=''){
   const el=document.createElement('div');el.className='xpfl';
   el.style.color=color||'#f0b429';
-  el.textContent='+'+amt+' xp';
+  el.textContent=(comboIcon?comboIcon+' ':'')+'+'+amt+' xp';
   el.style.left=(Math.random()*50+25)+'%';el.style.top='40%';
   document.body.appendChild(el);setTimeout(()=>el.remove(),1600);
 }
@@ -1695,17 +1975,344 @@ function toggleArchive(){
 }
 
 // ══════════════════════════════════════════
+// ACHIEVEMENTS & STATS UI
+// ══════════════════════════════════════════
+
+function openAchievements(){
+  const list=document.getElementById('achieveList');
+  list.innerHTML='';
+  for(const a of ACHIEVEMENTS){
+    const earned=(S.achievements||[]).includes(a.id);
+    const row=document.createElement('div');
+    row.style.cssText=`display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:12px;background:${earned?'var(--parch)':'var(--parch2)'};border:1.5px solid ${earned?'var(--parch4)':'var(--parch3)'};opacity:${earned?1:0.55}`;
+    row.innerHTML=`
+      <div style="font-size:22px;flex-shrink:0">${earned?a.icon:'🔒'}</div>
+      <div>
+        <div style="font-family:Cinzel,serif;font-size:13px;color:var(--ink)">${earned?a.name:'???'}</div>
+        <div style="font-family:Inter,sans-serif;font-size:10px;color:var(--ink4);margin-top:2px">${a.desc}</div>
+      </div>
+      ${earned?'<div style="margin-left:auto;font-family:Inter,sans-serif;font-size:9px;color:var(--forest)">✓</div>':''}`;
+    list.appendChild(row);
+  }
+  document.getElementById('achieveModalOverlay').classList.add('show');
+}
+document.getElementById('achieveModalOverlay').addEventListener('click',e=>{if(e.target===e.currentTarget)e.target.classList.remove('show')});
+
+function openStats(){
+  const todayStr=dk(new Date());
+  const allDays=Object.keys(S.days).sort();
+  const goodDays=allDays.filter(k=>(Object.values(S.days[k]||{}).filter(v=>v===true).length)>=3);
+
+  // Current streak (combo)
+  const curStreak=S.combo?.streak||0;
+
+  // Best streak — scan all days
+  let bestStreak=0,tmpStreak=0,prevDate=null;
+  for(const k of allDays){
+    const sc=Object.values(S.days[k]||{}).filter(v=>v===true).length;
+    if(sc>=3){
+      if(prevDate){
+        const prev=new Date(prevDate+'T00:00:00');
+        const cur=new Date(k+'T00:00:00');
+        const diff=(cur-prev)/(1000*60*60*24);
+        tmpStreak=diff===1?tmpStreak+1:1;
+      }else{tmpStreak=1;}
+      bestStreak=Math.max(bestStreak,tmpStreak);
+    }else{tmpStreak=0;}
+    prevDate=k;
+  }
+
+  // XP this month
+  const now=new Date();
+  const monthPrefix=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  // Approximate: sum xp from habits done this month
+  let monthXp=0;
+  for(const k of allDays){
+    if(!k.startsWith(monthPrefix))continue;
+    const d=S.days[k];
+    for(const h of getHabits()) if(d[h.id]) monthXp+=h.xp;
+  }
+  // Add quest/campaign xp approximation not tracked separately — just show habits xp
+
+  // Missions done
+  const missionsDone=(S.archivedCamps||[]).length;
+
+  // Most stable habit
+  const habitCounts=getHabits().map(h=>({h,cnt:allDays.filter(k=>S.days[k]?.[h.id]).length}));
+  habitCounts.sort((a,b)=>b.cnt-a.cnt);
+  const maxCount=habitCounts[0]?.cnt||1;
+
+  // Build stats grid
+  const grid=document.getElementById('statsGrid');
+  grid.innerHTML=`
+    <div class="stat-box"><div class="stat-box-n">${curStreak}д</div><div class="stat-box-l">Поточна серія</div></div>
+    <div class="stat-box"><div class="stat-box-n">${bestStreak}д</div><div class="stat-box-l">Рекордна серія</div></div>
+    <div class="stat-box"><div class="stat-box-n">${goodDays.length}</div><div class="stat-box-l">Хороших днів</div></div>
+    <div class="stat-box"><div class="stat-box-n">${S.totalXp}</div><div class="stat-box-l">Всього XP</div></div>
+    <div class="stat-box"><div class="stat-box-n">${monthXp}</div><div class="stat-box-l">XP місяця</div></div>
+    <div class="stat-box"><div class="stat-box-n">${missionsDone}</div><div class="stat-box-l">Місій завершено</div></div>`;
+
+  // Habit bars
+  const habitsEl=document.getElementById('statsHabits');
+  habitsEl.innerHTML=habitCounts.map(({h,cnt})=>`
+    <div class="habit-bar-row">
+      <div class="habit-bar-label">${h.icon} ${h.name}</div>
+      <div class="habit-bar-bg"><div class="habit-bar-fill" style="width:${maxCount>0?Math.round(cnt/maxCount*100):0}%"></div></div>
+      <div class="habit-bar-cnt">${cnt}</div>
+    </div>`).join('');
+
+  // Mood chart — last 30 days
+  const chart=document.getElementById('moodChart');
+  const labels=document.getElementById('moodChartLabels');
+  const last30=Array.from({length:30},(_,i)=>{
+    const d=new Date();d.setDate(d.getDate()-(29-i));
+    return dk(d);
+  });
+  const moodColors=['#8b6551','#b89070','#c8960c','#5a9e72','#3d6b4f'];
+  const chartDays=last30.filter((_,i)=>i%5===4); // show label every 5 days
+  chart.innerHTML=last30.map(k=>{
+    const entry=S.diary?.[k]||(S.diaryArchive||[]).find(e=>e.date===k);
+    const mood=entry?.mood;
+    const h=typeof mood==='number'?Math.round((mood+1)/5*100):0;
+    const col=typeof mood==='number'?moodColors[mood]:'var(--parch3)';
+    return`<div class="mood-bar" style="height:${Math.max(h,4)}%;background:${col};opacity:${typeof mood==='number'?0.85:0.3}" title="${typeof mood==='number'?MOODS[mood]:'–'}"></div>`;
+  }).join('');
+  labels.innerHTML=last30.map((k,i)=>{
+    if(i%5!==4)return'<span></span>';
+    const d=new Date(k+'T00:00:00');
+    return`<span>${d.getDate()}/${d.getMonth()+1}</span>`;
+  }).join('');
+
+  document.getElementById('statsModalOverlay').classList.add('show');
+}
+document.getElementById('statsModalOverlay').addEventListener('click',e=>{if(e.target===e.currentTarget)e.target.classList.remove('show')});
+
+// ══════════════════════════════════════════
+// TREASURE SYSTEM
+// ══════════════════════════════════════════
+
+function getWeekKey(date){
+  const d=new Date(date);d.setHours(0,0,0,0);
+  // ISO week: monday-based
+  d.setDate(d.getDate()-d.getDay()+1);
+  return dk(d);
+}
+
+function countGoodDaysThisWeek(){
+  const today=new Date();today.setHours(0,0,0,0);
+  const monday=new Date(today);monday.setDate(today.getDate()-today.getDay()+1);
+  let good=0;
+  for(let i=0;i<7;i++){
+    const d=new Date(monday);d.setDate(monday.getDate()+i);
+    if(d>today)break;
+    const k=dk(d);
+    const sc=getHabits().filter(h=>S.days[k]?.[h.id]).length;
+    if(sc>=3)good++;
+  }
+  return good;
+}
+
+function checkTreasure(){
+  const todayStr=dk(new Date());
+  const weekKey=getWeekKey(new Date());
+  if(!S.treasure)S.treasure={lastWeek:null,lastBigWeek:null,pending:null};
+
+  // Already has pending — show it
+  if(S.treasure.pending){
+    renderTreasureCard();
+    return;
+  }
+
+  const good=countGoodDaysThisWeek();
+  // Big chest: 5+ good days this week, not yet claimed this week
+  if(good>=5&&S.treasure.lastBigWeek!==weekKey){
+    S.treasure.pending={type:'big',weekKey};
+    save();renderTreasureCard();return;
+  }
+  // Small chest: 3+ good days this week, not yet claimed this week
+  if(good>=3&&S.treasure.lastWeek!==weekKey){
+    S.treasure.pending={type:'small',weekKey};
+    save();renderTreasureCard();return;
+  }
+  // No chest
+  document.getElementById('treasureSection').style.display='none';
+}
+
+function renderTreasureCard(){
+  if(!S.treasure?.pending){
+    document.getElementById('treasureSection').style.display='none';
+    return;
+  }
+  const isBig=S.treasure.pending.type==='big';
+  document.getElementById('treasureSection').style.display='block';
+  document.getElementById('treasureBox').textContent=isBig?'💎':'📦';
+  document.getElementById('treasureTitle').textContent=isBig?'Велика скринька!':'Скринька готова!';
+  document.getElementById('treasureSub').textContent=isBig?'5+ хороших днів — особлива нагорода ✨':'3+ хороших дні цього тижня — твоя нагорода';
+}
+
+function openTreasure(){
+  if(!S.treasure?.pending)return;
+  const isBig=S.treasure.pending.type==='big';
+  const pool=isBig?REWARDS_BIG:REWARDS_SMALL;
+  const reward=pool[Math.floor(Math.random()*pool.length)];
+
+  // Shake animation
+  const box=document.getElementById('treasureBox');
+  box.classList.add('shaking');
+  setTimeout(()=>box.classList.remove('shaking'),500);
+
+  // Confetti
+  const card=document.getElementById('treasureCard');
+  const colors=['#f0b429','#c8960c','#9b6bcc','#3d6b4f','#ffd166'];
+  for(let i=0;i<12;i++){
+    setTimeout(()=>{
+      const c=document.createElement('div');
+      c.className='confetti-piece';
+      c.style.cssText=`left:${Math.random()*100}%;top:0;background:${colors[Math.floor(Math.random()*colors.length)]};animation-delay:${Math.random()*0.3}s`;
+      card.appendChild(c);
+      setTimeout(()=>c.remove(),1200);
+    },i*40);
+  }
+
+  // Show reward modal after shake
+  setTimeout(()=>{
+    document.getElementById('trewardType').textContent=isBig?'💎 Велика нагорода':'🎁 Нагорода тижня';
+    document.getElementById('trewardIcon').textContent=reward.icon;
+    document.getElementById('trewardName').textContent=reward.name;
+    document.getElementById('trewardOverlay').classList.add('show');
+  },600);
+}
+
+function closeTreasure(){
+  const isBig=S.treasure?.pending?.type==='big';
+  const weekKey=S.treasure?.pending?.weekKey;
+  if(isBig){S.treasure.lastBigWeek=weekKey;}
+  else{S.treasure.lastWeek=weekKey;}
+  S.treasure.pending=null;
+  save();
+  document.getElementById('trewardOverlay').classList.remove('show');
+  document.getElementById('treasureSection').style.display='none';
+  showToast('Нагороду отримано! Ти заслужила 🌟','✦ Скарбниця');
+}
+document.getElementById('trewardOverlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeTreasure()});
+
+// ══════════════════════════════════════════
+// DIARY + MOOD SYSTEM
+// ══════════════════════════════════════════
+
+const MOODS=['😔','😐','🙂','😊','🤩'];
+
+function archiveYesterdayDiary(){
+  const todayStr=dk(new Date());
+  // Move any diary entries that are not today into archive
+  for(const date of Object.keys(S.diary||{})){
+    if(date!==todayStr){
+      const entry=S.diary[date];
+      if(entry&&(entry.text||entry.mood)){
+        if(!S.diaryArchive)S.diaryArchive=[];
+        // Avoid duplicates
+        if(!S.diaryArchive.find(e=>e.date===date)){
+          S.diaryArchive.unshift({date,...entry});
+        }
+      }
+      delete S.diary[date];
+    }
+  }
+}
+
+function saveDiaryEntry(){
+  const todayStr=dk(new Date());
+  const text=document.getElementById('diaryText').value;
+  if(!S.diary)S.diary={};
+  if(!S.diary[todayStr])S.diary[todayStr]={};
+  S.diary[todayStr].text=text;
+  save();
+}
+
+function setMood(idx){
+  const todayStr=dk(new Date());
+  if(!S.diary)S.diary={};
+  if(!S.diary[todayStr])S.diary[todayStr]={};
+  // Toggle off if same
+  if(S.diary[todayStr].mood===idx){
+    delete S.diary[todayStr].mood;
+  }else{
+    S.diary[todayStr].mood=idx;
+  }
+  save();
+  renderDiary();
+}
+
+function renderDiary(){
+  const todayStr=dk(new Date());
+  const entry=S.diary?.[todayStr]||{};
+
+  // Mood buttons
+  const row=document.getElementById('moodRow');
+  row.innerHTML='';
+  MOODS.forEach((m,i)=>{
+    const btn=document.createElement('button');
+    btn.className='mood-btn'+(entry.mood===i?' active':'');
+    btn.textContent=m;
+    btn.onclick=()=>setMood(i);
+    row.appendChild(btn);
+  });
+
+  // Text
+  const ta=document.getElementById('diaryText');
+  if(ta&&document.activeElement!==ta){
+    ta.value=entry.text||'';
+  }
+
+  // Hint
+  const hint=document.getElementById('diaryHint');
+  const archiveCount=(S.diaryArchive||[]).length;
+  hint.textContent=archiveCount>0?`${archiveCount} записів в архіві`:'Перший запис стане архівом завтра';
+}
+
+function openDiaryArchive(){
+  const list=document.getElementById('diaryArchiveList');
+  const entries=S.diaryArchive||[];
+  if(!entries.length){
+    list.innerHTML='<div style="text-align:center;color:var(--ink4);font-style:italic;padding:20px">Архів порожній — записи з\'являться наступного дня</div>';
+  }else{
+    list.innerHTML=entries.map(e=>{
+      const moodEmoji=typeof e.mood==='number'?MOODS[e.mood]:'';
+      const d=new Date(e.date+'T00:00:00');
+      const months=['Січня','Лютого','Березня','Квітня','Травня','Червня','Липня','Серпня','Вересня','Жовтня','Листопада','Грудня'];
+      const dateLabel=`${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+      return`<div class="diary-entry">
+        <div>
+          <div class="diary-entry-date">${dateLabel}</div>
+          <div class="diary-entry-text">${e.text?e.text.replace(/</g,'&lt;'):'<em style="color:var(--ink4)">без тексту</em>'}</div>
+        </div>
+        <div class="diary-entry-mood">${moodEmoji}</div>
+      </div>`;
+    }).join('');
+  }
+  document.getElementById('diaryModalOverlay').classList.add('show');
+}
+document.getElementById('diaryModalOverlay').addEventListener('click',e=>{if(e.target===e.currentTarget)e.target.classList.remove('show')});
+
+// Auto-save diary on input
+document.getElementById('diaryText').addEventListener('input',saveDiaryEntry);
+
+// ══════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════
 
 maybeRotatePoolQuest();
 maybeRotateSideQuest();
+archiveYesterdayDiary();
 S.lastSeen=dk(new Date());
 S.todayDate=dk(new Date());
 
 save();
 render();
 renderCampaigns();
+renderDiary();
+checkAchievements();
+checkTreasure();
 </script>
 </body>
 </html>
