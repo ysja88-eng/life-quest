@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Life Quest · Іскра</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -59,6 +62,11 @@ body{background:var(--parch2);color:var(--ink);font-family:'Crimson Pro',serif;m
 .d-emoji{font-size:72px;line-height:1;filter:drop-shadow(0 4px 14px rgba(91,58,126,.3));animation:dfloat 4s ease-in-out infinite;position:relative;z-index:1;transition:all .5s}
 .d-emoji.sleeping{animation:none;filter:grayscale(.5) drop-shadow(0 2px 6px rgba(0,0,0,.15))}
 @keyframes dfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes evolve-glow{0%{box-shadow:0 0 0 0 rgba(155,107,204,0)}50%{box-shadow:0 0 50px 20px rgba(155,107,204,.5)}100%{box-shadow:0 0 0 0 rgba(155,107,204,0)}}
+.dragon-card.evolving{animation:evolve-glow 1.8s ease-out}
+
+.hedit-btn{background:transparent;border:1px solid var(--parch4);border-radius:6px;color:var(--ink3);font-size:13px;padding:1px 7px;cursor:pointer;transition:all .2s;line-height:1.4;flex-shrink:0}
+.hedit-btn:hover{border-color:var(--gold);color:var(--gold)}
 
 /* CHAR */
 .char-card{background:var(--parch);border:2px solid var(--parch4);border-radius:var(--r);padding:20px 26px;margin-bottom:16px;box-shadow:var(--shadow);position:relative}
@@ -250,6 +258,78 @@ body{background:var(--parch2);color:var(--ink);font-family:'Crimson Pro',serif;m
 .backup-btn.import:hover{border-color:var(--forest);color:var(--forest)}
 .backup-hint{font-family:'Inter',sans-serif;font-size:10px;color:var(--ink4);line-height:1.5;font-style:italic}
 
+/* CAMPAIGN */
+.camp-card{background:var(--parch);border:2px solid var(--parch4);border-radius:var(--r);
+  padding:20px 22px;margin-bottom:14px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.camp-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,transparent,var(--cc,var(--forest)),var(--gold3),var(--cc,var(--forest)),transparent)}
+.camp-head{display:flex;align-items:center;gap:12px;margin-bottom:4px}
+.camp-icon{font-size:26px;flex-shrink:0}
+.camp-title{font-family:'Cinzel',serif;font-size:16px;color:var(--ink);flex:1}
+.camp-status{font-family:'Inter',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;
+  padding:2px 8px;border-radius:99px;background:var(--parch3);border:1px solid var(--parch4);color:var(--ink3)}
+.camp-status.done{background:color-mix(in srgb,var(--cc,var(--forest)) 15%,var(--parch3));
+  border-color:var(--cc,var(--forest));color:var(--cc,var(--forest))}
+.camp-steps{font-family:'Inter',sans-serif;font-size:11px;color:var(--ink4);margin-bottom:14px}
+.camp-steps strong{color:var(--ink2);font-family:'Cinzel',serif;font-size:13px}
+
+/* SVG path map */
+.camp-map{width:100%;margin-bottom:14px;overflow:visible}
+.camp-path-bg{stroke:var(--parch3);stroke-width:4;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.camp-path-fill{stroke-width:4;fill:none;stroke-linecap:round;stroke-linejoin:round;
+  transition:stroke-dashoffset 1s cubic-bezier(.34,1.2,.64,1)}
+.camp-node{transition:all .4s}
+.camp-node-inner{transition:all .4s}
+.camp-node-label{font-family:'Inter',sans-serif;font-size:9px;fill:var(--ink4);text-anchor:middle}
+.camp-node-label.active{fill:var(--ink2);font-weight:600}
+
+/* Campaign actions */
+.camp-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.camp-step-btn{background:color-mix(in srgb,var(--cc,var(--forest)) 12%,var(--parch));
+  border:1.5px solid var(--cc,var(--forest));color:var(--cc,var(--forest));
+  font-family:'Inter',sans-serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;
+  padding:7px 14px;border-radius:9px;cursor:pointer;transition:all .2s;font-weight:500}
+.camp-step-btn:hover{background:color-mix(in srgb,var(--cc,var(--forest)) 22%,var(--parch))}
+.camp-step-input{width:52px;background:var(--parch2);border:1.5px solid var(--parch4);border-radius:8px;
+  padding:6px 8px;font-family:'Cinzel',serif;font-size:14px;color:var(--ink);text-align:center;outline:none}
+.camp-step-input:focus{border-color:var(--gold)}
+.camp-edit-btn{background:transparent;border:1px solid var(--parch4);color:var(--ink4);
+  font-family:'Inter',sans-serif;font-size:10px;padding:6px 12px;border-radius:8px;cursor:pointer;
+  transition:all .2s;margin-left:auto}
+.camp-edit-btn:hover{border-color:var(--ink3);color:var(--ink3)}
+.camp-done-label{font-family:'Inter',sans-serif;font-size:11px;letter-spacing:1px;
+  text-transform:uppercase;color:var(--forest);padding:4px 0}
+
+/* Archive */
+.camp-archive{margin-top:8px}
+.camp-archive-toggle{background:transparent;border:none;font-family:'Inter',sans-serif;font-size:10px;
+  letter-spacing:2px;text-transform:uppercase;color:var(--ink4);cursor:pointer;padding:8px 0;
+  display:flex;align-items:center;gap:6px}
+.camp-archive-toggle:hover{color:var(--ink2)}
+.camp-archive-list{display:none;flex-direction:column;gap:10px;margin-top:10px}
+.camp-archive-list.open{display:flex}
+.camp-card.archived{opacity:.65;background:var(--parch2)}
+
+/* Campaign modal stages */
+.stages-list{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+.stage-row{display:grid;grid-template-columns:1fr 70px 28px;gap:8px;align-items:center}
+.stage-row input{background:var(--parch2);border:1.5px solid var(--parch4);border-radius:8px;
+  padding:7px 10px;font-family:'Crimson Pro',serif;font-size:13px;color:var(--ink);outline:none}
+.stage-row input:focus{border-color:var(--gold)}
+.stage-del{background:transparent;border:none;color:var(--ink4);font-size:16px;cursor:pointer;
+  padding:2px 4px;transition:color .2s}
+.stage-del:hover{color:var(--crimson)}
+.add-stage-btn{background:transparent;border:1px dashed var(--parch4);color:var(--ink4);
+  font-family:'Inter',sans-serif;font-size:10px;letter-spacing:1px;text-transform:uppercase;
+  padding:7px;border-radius:8px;cursor:pointer;width:100%;transition:all .2s;margin-top:4px}
+.add-stage-btn:hover{border-color:var(--gold);color:var(--gold)}
+
+@keyframes milestone-glow{
+  0%{box-shadow:0 0 0 0 rgba(200,150,12,0)}
+  40%{box-shadow:0 0 30px 12px rgba(200,150,12,.5)}
+  100%{box-shadow:0 0 0 0 rgba(200,150,12,0)}}
+.camp-card.milestone-flash{animation:milestone-glow 1.6s ease-out}
+
 @media(max-width:560px){
   .cg{grid-template-columns:auto 1fr;gap:12px}
   .c-right{flex-direction:row;align-items:center;grid-column:1/-1;justify-content:space-between}
@@ -260,6 +340,7 @@ body{background:var(--parch2);color:var(--ink);font-family:'Crimson Pro',serif;m
   .d-stats{justify-content:center}
   .field-row{grid-template-columns:1fr}
   .qtop{grid-template-columns:40px 1fr auto}
+  .stage-row{grid-template-columns:1fr 60px 28px}
 }
 </style>
 </head>
@@ -303,7 +384,7 @@ body{background:var(--parch2);color:var(--ink);font-family:'Crimson Pro',serif;m
 <!-- CHAR -->
 <div class="char-card">
   <div class="cg">
-    <div class="c-ava">🧙‍♀️</div>
+    <div class="c-ava">🧝🏻‍♀️</div>
     <div>
       <div class="c-sub">Герой щоденника</div>
       <div class="c-name">Людмила</div>
@@ -330,6 +411,7 @@ body{background:var(--parch2);color:var(--ink);font-family:'Crimson Pro',serif;m
 <!-- HABITS -->
 <div class="sec">
   <span class="sec-i">⚔️</span><span class="sec-t">Щоденні звички</span><div class="sec-l"></div>
+  <button class="sec-btn" onclick="openAddHabit()">+ Звичка</button>
 </div>
 <div class="habits" id="habits"></div>
 
@@ -340,13 +422,22 @@ body{background:var(--parch2);color:var(--ink);font-family:'Crimson Pro',serif;m
 </div>
 <div class="quest-list" id="questList"></div>
 
+<!-- CAMPAIGNS -->
+<div class="sec">
+  <span class="sec-i">⚡</span><span class="sec-t">Місії</span><div class="sec-l"></div>
+  <button class="sec-btn" onclick="openAddCampaign()">+ Місія</button>
+</div>
+<div id="campaignList"></div>
+<div class="camp-archive">
+  <button class="camp-archive-toggle" onclick="toggleArchive()" id="archiveToggle">▸ Архів місій <span id="archiveCount"></span></button>
+  <div class="camp-archive-list" id="archiveList"></div>
+</div>
+
 <!-- MAP -->
 <div class="map-card">
   <div class="sec"><span class="sec-i">📅</span><span class="sec-t">Тиждень</span><div class="sec-l"></div></div>
   <div class="mg" id="mg"></div>
 </div>
-
-<button class="rbtn" onclick="resetToday()">↺ скинути звички сьогодні</button>
 
 <!-- BACKUP PANEL -->
 <div class="backup-panel">
@@ -389,6 +480,13 @@ body{background:var(--parch2);color:var(--ink);font-family:'Crimson Pro',serif;m
         </select>
       </div>
     </div>
+    <div class="field">
+      <label>Роль квесту</label>
+      <select id="qRole">
+        <option value="main">🗺️ Головний — виконати або відмовитись</option>
+        <option value="side">🌿 Побічний — щоденний, без відмови</option>
+      </select>
+    </div>
     <div class="modal-btns">
       <button class="btn-cancel" onclick="closeModal()">Скасувати</button>
       <button class="btn-del" id="btnDel" onclick="deleteQuest()" style="display:none">Видалити</button>
@@ -403,16 +501,107 @@ body{background:var(--parch2);color:var(--ink);font-family:'Crimson Pro',serif;m
   <div class="tb" id="tb"></div>
 </div>
 
+<!-- HABIT MODAL -->
+<div class="modal-overlay" id="habitModalOverlay">
+  <div class="modal">
+    <div class="modal-title" id="habitModalTitle">Нова звичка</div>
+    <div class="field">
+      <label>Іконка</label>
+      <div class="emoji-picks" id="habitEmojiPicks"></div>
+    </div>
+    <div class="field"><label>Назва</label><input id="hName" placeholder="Наприклад: Медитація 10хв" /></div>
+    <div class="field"><label>Опис (необов'язково)</label><textarea id="hDesc" placeholder="Деталі…"></textarea></div>
+    <div class="field-row">
+      <div class="field">
+        <label>Складність / XP</label>
+        <select id="hXp">
+          <option value="5">5 xp — легка</option>
+          <option value="8" selected>8 xp — середня</option>
+          <option value="12">12 xp — складно</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Колір</label>
+        <select id="hColor">
+          <option value="#5b3a7e">Фіолетовий</option>
+          <option value="#3d6b4f">Зелений</option>
+          <option value="#2c5f8a">Синій</option>
+          <option value="#c8960c">Золотий</option>
+          <option value="#8b2635">Бордовий</option>
+          <option value="#8b4513">Коричневий</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeHabitModal()">Скасувати</button>
+      <button class="btn-del" id="btnHabitDel" onclick="deleteHabit()" style="display:none">Видалити</button>
+      <button class="btn-save" onclick="saveHabit()">Зберегти</button>
+    </div>
+  </div>
+</div>
+
+<!-- CAMPAIGN MODAL -->
+<div class="modal-overlay" id="campModalOverlay">
+  <div class="modal">
+    <div class="modal-title" id="campModalTitle">Нова місія</div>
+    <div class="field">
+      <label>Іконка</label>
+      <div class="emoji-picks" id="campEmojiPicks"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Назва місії</label><input id="cName" placeholder="Наприклад: Курс Python" /></div>
+      <div class="field">
+        <label>Колір</label>
+        <select id="cColor">
+          <option value="#3d6b4f">Зелений</option>
+          <option value="#5b3a7e">Фіолетовий</option>
+          <option value="#2c5f8a">Синій</option>
+          <option value="#c8960c">Золотий</option>
+          <option value="#8b2635">Бордовий</option>
+          <option value="#8b4513">Коричневий</option>
+        </select>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>XP за крок</label>
+        <select id="cStepXp">
+          <option value="3">3 xp</option>
+          <option value="5" selected>5 xp</option>
+          <option value="8">8 xp</option>
+        </select>
+      </div>
+      <div class="field"><label>XP за milestone</label>
+        <select id="cMileXp">
+          <option value="20">20 xp</option>
+          <option value="30" selected>30 xp</option>
+          <option value="50">50 xp</option>
+          <option value="80">80 xp</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label>Етапи місії</label>
+      <div class="stages-list" id="stagesList"></div>
+      <button class="add-stage-btn" onclick="addStageRow()">+ Додати етап</button>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeCampModal()">Скасувати</button>
+      <button class="btn-del" id="btnCampDel" onclick="deleteCampaign()" style="display:none">Видалити</button>
+      <button class="btn-save" onclick="saveCampaign()">Зберегти</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ══════════════════════════════════════════
 // STATIC CONFIG
 // ══════════════════════════════════════════
 
-const HABITS=[
-  {id:'bed',  icon:'🌙',name:'Відбій до 23:00',       desc:'Лягти в ліжко до опівночі',           xp:10,color:'#5b3a7e'},
-  {id:'walk', icon:'🌿',name:'Прогулянка 30хв+',      desc:'Вийти на повітря мінімум пів години',  xp:8, color:'#3d6b4f'},
-  {id:'read', icon:'📖',name:'Читання 20стор+',        desc:'Книга, не стрічка',                    xp:8, color:'#2c5f8a'},
-  {id:'hobby',icon:'🎨',name:'Хобі',                  desc:'Час тільки для себе',                   xp:10,color:'#c8960c'},
+const DEFAULT_HABITS=[
+  {id:'bed',  icon:'🌙',name:'Відбій до 23:00',       desc:'Лягти в ліжко до опівночі',           xp:8, color:'#5b3a7e'},
+  {id:'walk', icon:'🌿',name:'Прогулянка 30хв+',      desc:'Вийти на повітря мінімум пів години',  xp:5, color:'#3d6b4f'},
+  {id:'read', icon:'📖',name:'Читання 20стор+',        desc:'Книга, не стрічка',                    xp:5, color:'#2c5f8a'},
+  {id:'hobby',icon:'🎨',name:'Хобі',                  desc:'Час тільки для себе',                   xp:8, color:'#c8960c'},
   {id:'phone',icon:'🕯️',name:'Без телефону після 21', desc:'Екран вимкнено — душа відпочиває',     xp:5, color:'#8b2635'},
 ];
 
@@ -452,9 +641,27 @@ const QUEST_POOL=[
   {pid:'p15',icon:'✍️',name:'Написати листа',         desc:'Комусь близькому — від руки або email',   xp:20,type:'once',  color:'#2c5f8a'},
 ];
 
+// Пул побічних квестів — щоденні, легкі, без відмови
+const SIDE_QUEST_POOL=[
+  {pid:'s01',icon:'💧',name:'Випити 2 літри води',     desc:'Відслідкуй протягом дня',                  xp:10,color:'#2c5f8a'},
+  {pid:'s02',icon:'🤸',name:'Розтяжка 10 хв',          desc:'Вранці або ввечері — будь-коли',            xp:10,color:'#3d6b4f'},
+  {pid:'s03',icon:'📝',name:'Записати 3 думки дня',    desc:'Що було добре, що навчила, що завтра',      xp:10,color:'#5b3a7e'},
+  {pid:'s04',icon:'🌅',name:'Вийти на свіже повітря',  desc:'Хоча б 10 хвилин на вулиці',               xp:10,color:'#3d6b4f'},
+  {pid:'s05',icon:'📵',name:'Без телефону 1 годину',   desc:'Поклади і забудь про нього',                xp:10,color:'#8b2635'},
+  {pid:'s06',icon:'🙏',name:'Подякувати комусь',       desc:'Словом, повідомленням або вчинком',         xp:10,color:'#c8960c'},
+  {pid:'s07',icon:'🧹',name:'Прибрати одне місце',     desc:'Стіл, полиця, шафа — що завгодно',          xp:10,color:'#8b4513'},
+  {pid:'s08',icon:'📖',name:'Прочитати 10 сторінок',   desc:'Менше ніж звичка, але краще ніж нічого',   xp:10,color:'#2c5f8a'},
+  {pid:'s09',icon:'😮‍💨',name:'5 хвилин тиші',        desc:'Без екрану, музики, розмов — просто тиша', xp:10,color:'#5b3a7e'},
+  {pid:'s10',icon:'🍎',name:'З\'їсти фрукт або овоч',  desc:'Будь-який — банан, яблуко, морква',         xp:10,color:'#3d6b4f'},
+  {pid:'s11',icon:'✍️',name:'Написати щось від руки',  desc:'Список, думка, ім\'я — хоч рядок',         xp:10,color:'#5b3a7e'},
+  {pid:'s12',icon:'🌙',name:'Лягти до 23:30',          desc:'Просто вчасно закрити очі',                 xp:10,color:'#5b3a7e'},
+  {pid:'s13',icon:'💡',name:'Дізнатись щось нове',     desc:'Одне цікаве, що ти сьогодні дізналась',    xp:10,color:'#c8960c'},
+  {pid:'s14',icon:'❤️',name:'Написати близькій людині',desc:'Коротко: як ти, думаю про тебе',            xp:10,color:'#8b2635'},
+];
+
 const QUEST_EMOJIS=['🏋️','🏃','🚴','🧗','🎯','📚','✍️','🎸','🎹','🌍','✈️','🏕️','🧘','💊','🌱','🤝','💡','🔥','⭐','🎉','🍳','📝','🌅','🤸','💧','📵','🎨','🎵','🌙','✉️'];
 
-const QUEST_COLORS={once:'#5b3a7e',repeat:'#3d6b4f',custom:'#2c5f8a'};
+const QUEST_COLORS={once:'#5b3a7e',repeat:'#3d6b4f',custom:'#2c5f8a',side:'#8b4513'};
 
 const QUOTES=['Кожна місія виконана — крок до кращої версії себе.','Не мотивація. Рішення. Потім дія.','Герой не той, хто не падає. Той, хто встає щодня.','Маленькі перемоги складають велику историю.','Твоя дисципліна — твоя суперсила.','Кожен день — нова сторінка квесту.','Іскра горить поки ти діяєш.'];
 
@@ -469,18 +676,28 @@ function save(){localStorage.setItem(KEY,JSON.stringify(S))}
 let S=load();
 if(!S.days)          S.days={};
 if(!S.totalXp)       S.totalXp=0;
-if(!S.dragonPts)     S.dragonPts=0;
-if(!S.peakPts)       S.peakPts=0;
 if(!S.lastSeen)      S.lastSeen=null;
 if(!S.todayDate)     S.todayDate=null;
-if(!S.customQuests)  S.customQuests=[];       // user-created quests (always shown)
-// Active pool quest slot
-if(!S.activePoolQuest) S.activePoolQuest=null; // {pid, assignedOn, status:'active'|'done'|'declined', doneOn}
-if(!S.usedPoolPids)  S.usedPoolPids=[];        // pids already used (to avoid repeats)
+if(!S.customQuests)  S.customQuests=[];
+if(!S.customHabits)  S.customHabits=null; // null = use defaults; array = user's own list
+if(!S.activePoolQuest) S.activePoolQuest=null;
+if(!S.usedPoolPids)  S.usedPoolPids=[];
+if(!S.activeSideQuest) S.activeSideQuest=null; // {pid, assignedOn, doneOn}
+if(!S.usedSidePids)  S.usedSidePids=[];
+if(!S.campaigns)     S.campaigns=[];   // active campaigns
+if(!S.archivedCamps) S.archivedCamps=[];// completed campaigns
 
-let cur=new Date(); cur.setHours(0,0,0,0);
+// Актуальний список звичок: або дефолт, або збережений користувачем
+function getHabits(){return S.customHabits||DEFAULT_HABITS;}
+
+const HABIT_EMOJIS=['🌙','🌿','📖','🎨','🕯️','🏃','🧘','💧','🤸','📝','🌅','🎵','💊','🌱','🔥','⭐','🍎','🚴','🧗','📵','🛌','🧹','🍳','✍️','🤝','💡','❤️','🌍','🏋️','☀️'];
+
 let editingId=null;
 let selectedEmoji=QUEST_EMOJIS[0];
+let editingHabitId=null;
+let selectedHabitEmoji=HABIT_EMOJIS[0];
+
+let cur=new Date(); cur.setHours(0,0,0,0);
 
 // ══════════════════════════════════════════
 // HELPERS
@@ -493,8 +710,7 @@ const daysDiff=(a,b)=>Math.floor((dkToDate(a)-dkToDate(b))/(1000*60*60*24));
 function dd(k){if(!S.days[k])S.days[k]={};return S.days[k]}
 function getLvl(xp){let l=LEVELS[0];for(const x of LEVELS)if(xp>=x.xp)l=x;return l}
 function getNext(xp){for(const x of LEVELS)if(xp<x.xp)return x;return null}
-function getDragon(pts){let d=DRAGON[0];for(const x of DRAGON)if(pts>=x.min)d=x;return d}
-function habitScore(k){const d=S.days[k];if(!d)return null;return HABITS.filter(h=>d[h.id]).length}
+function habitScore(k){const d=S.days[k];if(!d)return null;return getHabits().filter(h=>d[h.id]).length}
 function totalGoodDays(){return Object.keys(S.days).filter(k=>(habitScore(k)||0)>=3).length}
 
 function hStreak(id){
@@ -515,30 +731,80 @@ function fmtDate(d){
   return`${D[d.getDay()]}, ${d.getDate()} ${M[d.getMonth()]}`;
 }
 
-// ── Dragon missed-day penalty ──
-function applyMissedDays(){
+// ══════════════════════════════════════════
+// DRAGON SYSTEM (clean rewrite)
+// ══════════════════════════════════════════
+// Логіка: бали = кількість "хороших" днів (3+ звичок) * 10
+// мінус штраф 5 за кожен "поганий" день де є хоч якась активність,
+// мінус 5 за кожен повністю пропущений день між lastSeen і вчора.
+// Результат cap 0..100. Рахується щоразу з нуля — ніякого стану в S.
+
+function calcDragonPts(){
   const todayStr=dk(new Date());
-  if(!S.lastSeen||S.lastSeen===todayStr)return;
-  let d=new Date(S.lastSeen);d.setDate(d.getDate()+1);
-  const yesterday=new Date();yesterday.setHours(0,0,0,0);yesterday.setDate(yesterday.getDate()-1);
-  let pen=0;
-  while(d<=yesterday){if((habitScore(dk(d))||0)<3)pen++;d.setDate(d.getDate()+1);}
-  if(pen>0){S.dragonPts=Math.max(0,S.dragonPts-pen*MISS_PENALTY);save();}
+  let good=0, bad=0;
+  // Минулі дні (не сьогодні)
+  for(const k of Object.keys(S.days)){
+    if(k===todayStr) continue; // сьогодні ще йде — не штрафуємо
+    const sc=habitScore(k)||0;
+    if(sc>=3) good++;
+    else bad++;
+  }
+  // Сьогодні: тільки плюс якщо вже 3+, без штрафу якщо менше
+  if((habitScore(todayStr)||0)>=3) good++;
+  // Пропущені дні між lastSeen і вчора (не відкривала взагалі)
+  if(S.lastSeen&&S.lastSeen!==todayStr){
+    let d=new Date(S.lastSeen);
+    d.setDate(d.getDate()+1);
+    const yesterday=new Date();yesterday.setHours(0,0,0,0);yesterday.setDate(yesterday.getDate()-1);
+    while(d<=yesterday){
+      const k=dk(d);
+      if(!S.days[k]) bad++;
+      d.setDate(d.getDate()+1);
+    }
+  }
+  return Math.min(MAX_PTS, Math.max(0, good*GOOD_DAY_PTS - bad*MISS_PENALTY));
 }
 
-function recalcDragonToday(){
-  const k=dk(new Date()),sc=habitScore(k)||0;
-  if(!S.days[k])S.days[k]={};
-  const wasCounted=!!S.days[k]._dragon;
-  if(sc>=3&&!wasCounted){
-    S.dragonPts=Math.min(MAX_PTS,(S.dragonPts||0)+GOOD_DAY_PTS);
-    S.peakPts=Math.max(S.peakPts||0,S.dragonPts);
-    S.days[k]._dragon=true;
-    save();
-  }else if(sc<3&&wasCounted){
-    S.dragonPts=Math.max(0,(S.dragonPts||0)-GOOD_DAY_PTS);
-    S.days[k]._dragon=false;
-    save();
+function getDragonStage(pts){
+  let d=DRAGON[0];
+  for(const x of DRAGON) if(pts>=x.min) d=x;
+  return d;
+}
+
+function renderDragon(){
+  const pts=calcDragonPts();
+  const drg=getDragonStage(pts);
+  const goodDays=Object.keys(S.days).filter(k=>(habitScore(k)||0)>=3).length;
+
+  document.getElementById('dStage').textContent=drg.stage;
+  document.getElementById('dPts').textContent=pts;
+  document.getElementById('dBest').textContent=goodDays;
+  document.getElementById('dTotal').textContent=goodDays;
+  document.getElementById('bondPts').textContent=pts+' / 100';
+
+  const fill=document.getElementById('bondFill');
+  fill.style.width=pts+'%';
+  fill.className='bond-fill'+(pts<30?' low':pts<60?' mid':'');
+
+  const moodI=Math.floor(Date.now()/86400000)%drg.moods.length;
+  const isSad=pts===0&&goodDays>0;
+  const milestoneActive=S.dragonMilestoneMsg&&S.dragonMilestoneUntil&&Date.now()<S.dragonMilestoneUntil;
+  document.getElementById('dMood').textContent=
+    isSad?'😟 Іскра сумує… Поверни звички!':
+    milestoneActive?S.dragonMilestoneMsg:
+    drg.moods[moodI];
+  document.getElementById('dEmoji').textContent=drg.emoji;
+  document.getElementById('dEmoji').className='d-emoji'+(isSad?' sleeping':'');
+}
+
+function checkDragonEvolve(ptsBefore){
+  const ptsAfter=calcDragonPts();
+  const stageBefore=getDragonStage(ptsBefore);
+  const stageAfter=getDragonStage(ptsAfter);
+  if(stageAfter.min>stageBefore.min){
+    document.getElementById('dragonCard').classList.add('evolving');
+    setTimeout(()=>document.getElementById('dragonCard').classList.remove('evolving'),1800);
+    setTimeout(()=>showToast(`Іскра стала "${stageAfter.stage}"! ${stageAfter.emoji}`,'🐉 Еволюція!'),400);
   }
 }
 
@@ -561,12 +827,31 @@ function maybeRotatePoolQuest(){
   const todayStr=dk(new Date());
   if(!S.activePoolQuest){pickNextPoolQuest();return;}
   const aq=S.activePoolQuest;
-  if(aq.status==='active')return; // still ongoing
-  // Done or declined — check cooldown
+  if(aq.status==='active')return;
   if(aq.doneOn){
     const diff=daysDiff(todayStr,aq.doneOn);
     if(diff>=QUEST_COOLDOWN_DAYS){pickNextPoolQuest();}
   }
+}
+
+// ── Side quest rotation ──
+function getSideQuestById(pid){return SIDE_QUEST_POOL.find(q=>q.pid===pid)}
+
+function pickNextSideQuest(){
+  const todayStr=dk(new Date());
+  let available=SIDE_QUEST_POOL.filter(q=>!S.usedSidePids.includes(q.pid));
+  if(available.length===0){S.usedSidePids=[];available=[...SIDE_QUEST_POOL];}
+  const q=available[Math.floor(Math.random()*available.length)];
+  S.activeSideQuest={pid:q.pid,assignedOn:todayStr,doneOn:null};
+  S.usedSidePids.push(q.pid);
+  save();
+}
+
+function maybeRotateSideQuest(){
+  const todayStr=dk(new Date());
+  if(!S.activeSideQuest){pickNextSideQuest();return;}
+  // Щодня новий: якщо призначено не сьогодні — міняємо
+  if(S.activeSideQuest.assignedOn!==todayStr){pickNextSideQuest();}
 }
 
 function isPoolQuestDone(){
@@ -600,34 +885,37 @@ function render(){
   document.getElementById('txpN').textContent=S.totalXp;
 
   // Dragon
-  const drg=getDragon(S.peakPts),pts=S.dragonPts;
-  document.getElementById('dStage').textContent=drg.stage;
-  document.getElementById('dPts').textContent=pts;
-  document.getElementById('dBest').textContent=S.peakPts;
-  document.getElementById('dTotal').textContent=totalGoodDays();
-  document.getElementById('bondPts').textContent=`${pts} / 100`;
-  const fill=document.getElementById('bondFill');
-  fill.style.width=Math.min(100,pts)+'%';
-  fill.className='bond-fill'+(pts<30?' low':pts<60?' mid':'');
-  const moodI=Math.floor(Date.now()/86400000)%drg.moods.length;
-  document.getElementById('dMood').textContent=pts<20&&S.peakPts>0?'😟 Іскра сумує… Поверни звички!':drg.moods[moodI];
-  document.getElementById('dEmoji').textContent=drg.emoji;
-  document.getElementById('dEmoji').className='d-emoji'+(pts<20&&S.peakPts>0?' sleeping':'');
+  renderDragon();
 
   // HABITS
   const hlist=document.getElementById('habits');hlist.innerHTML='';
-  for(const h of HABITS){
+  for(const h of getHabits()){
     const done=!!data[h.id],s=hStreak(h.id),l7=last7h(h.id),hot=s>=3,past=!today;
+    const xpLabel=h.xp<=5?'легка':h.xp<=8?'середня':'складно';
     const row=document.createElement('div');
     row.className='hrow'+(done?' done':'')+(past?' past':'');
     row.style.setProperty('--hc',h.color);
     if(today)row.onclick=()=>toggleHabit(h,dateStr,done);
     const pips=l7.map((d,i)=>`<div class="pip${d?' lit':''}${i===6?' cur':''}"></div>`).join('');
-    row.innerHTML=`<div class="hemb">${h.icon}</div><div><div class="hname">${h.name}</div><div class="hdesc">${h.desc}</div><div class="hfoot">${s>0?`<span class="sb${hot?' fire':''}">${hot?'🔥':'⚡'} ${s}д підряд</span>`:''}<div class="trail">${pips}</div></div></div><div class="hright"><div class="seal">${done?'✓':''}</div><div class="xpc">${done?'✦ ':''}+${h.xp}xp</div></div>`;
+    row.innerHTML=`
+      <div class="hemb">${h.icon}</div>
+      <div>
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:2px">
+          <div class="hname" style="margin-bottom:0">${h.name}</div>
+          <button class="hedit-btn" onclick="event.stopPropagation();openEditHabit('${h.id}')">✎</button>
+        </div>
+        <div class="hdesc">${h.desc}</div>
+        <div class="hfoot">${s>0?`<span class="sb${hot?' fire':''}">${hot?'🔥':'⚡'} ${s}д підряд</span>`:''}<div class="trail">${pips}</div></div>
+      </div>
+      <div class="hright">
+        <div class="seal">${done?'✓':''}</div>
+        <div class="xpc">${done?'✦ ':''}+${h.xp}xp</div>
+        <div class="xpc" style="color:var(--ink4);font-size:9px">${xpLabel}</div>
+      </div>`;
     hlist.appendChild(row);
   }
 
-  // QUESTS
+
   renderQuests(today);
 
   // MAP
@@ -637,7 +925,7 @@ function render(){
     const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-i);
     const k=dk(d),sc=habitScore(k),isTod=isToday(d),di=(d.getDay()+6)%7;
     let cls='',label='–';
-    if(sc!==null){label=sc+'/'+HABITS.length;if(sc===HABITS.length)cls='perfect';else if(sc>=3)cls='good';else if(sc>=1)cls='meh';}
+    if(sc!==null){label=sc+'/'+getHabits().length;if(sc===getHabits().length)cls='perfect';else if(sc>=3)cls='good';else if(sc>=1)cls='meh';}
     if(isTod)cls+=' now';
     const c=document.createElement('div');c.className='mday';
     c.innerHTML=`<div class="mdn">${DN[di]}</div><div class="mhex ${cls}">${label}</div>`;
@@ -650,7 +938,7 @@ function renderQuests(today){
   ql.innerHTML='';
   const todayStr=dk(new Date());
 
-  // ── POOL QUEST ──
+  // ── ГОЛОВНИЙ КВЕСТ (з пулу) ──
   const aq=S.activePoolQuest;
   if(aq){
     const pq=getPoolQuestById(aq.pid);
@@ -658,37 +946,47 @@ function renderQuests(today){
       if(aq.status==='active'){
         ql.appendChild(buildQuestCard(pq,aq,today,'pool'));
       }else{
-        // Done or declined — show cooldown / incoming
         const diff=aq.doneOn?daysDiff(todayStr,aq.doneOn):0;
         const remaining=QUEST_COOLDOWN_DAYS-diff;
         if(remaining>0){
-          const cd=document.createElement('div');
-          cd.className='q-cooldown';
+          const cd=document.createElement('div');cd.className='q-cooldown';
           const verb=aq.status==='done'?'Виконано':'Відхилено';
-          cd.innerHTML=`<div class="q-cd-title">⏳ ${verb}: «${pq.name}»</div>
-            <div class="q-cd-sub">Новий квест з'явиться через ${remaining} ${remaining===1?'день':'дні'}</div>`;
+          cd.innerHTML=`<div class="q-cd-title">⏳ ${verb}: «${pq.name}»</div><div class="q-cd-sub">Новий квест з'явиться через ${remaining} ${remaining===1?'день':'дні'}</div>`;
           ql.appendChild(cd);
         }else{
-          // Should have rotated already, show incoming hint
-          const inc=document.createElement('div');
-          inc.className='q-incoming';
+          const inc=document.createElement('div');inc.className='q-incoming';
           inc.innerHTML=`<div class="q-incoming-icon">🗺️</div><div><div class="q-incoming-title">Новий квест готується…</div><div class="q-incoming-sub">Перезавантаж сторінку або відкрий завтра</div></div>`;
           ql.appendChild(inc);
         }
       }
     }
   }else{
-    // No quest yet
-    const inc=document.createElement('div');
-    inc.className='q-incoming';
+    const inc=document.createElement('div');inc.className='q-incoming';
     inc.innerHTML=`<div class="q-incoming-icon">🗺️</div><div><div class="q-incoming-title">Квест призначається…</div><div class="q-incoming-sub">Перезавантаж сторінку</div></div>`;
     ql.appendChild(inc);
   }
 
-  // ── CUSTOM QUESTS ──
-  for(const cq of S.customQuests){
+  // ── ПОБІЧНИЙ КВЕСТ (з пулу) ──
+  const sq=S.activeSideQuest;
+  if(sq){
+    const spq=getSideQuestById(sq.pid);
+    if(spq){
+      const sideDone=sq.doneOn===todayStr;
+      ql.appendChild(buildSideQuestCard(spq,sq,today,sideDone));
+    }
+  }
+
+  // ── КАСТОМНІ КВЕСТИ ──
+  const mainCustom=S.customQuests.filter(q=>q.role!=='side');
+  const sideCustom=S.customQuests.filter(q=>q.role==='side');
+
+  for(const cq of mainCustom){
     const isDone=cq.type==='repeat'?cq.completedOn?.includes(todayStr):(cq.completedOn?.length>0);
     ql.appendChild(buildQuestCard(cq,{status:isDone?'done':'active'},today,'custom'));
+  }
+  for(const cq of sideCustom){
+    const isDone=cq.completedOn?.includes(todayStr);
+    ql.appendChild(buildSideQuestCard(cq,{doneOn:isDone?todayStr:null},today,!!isDone,'custom',cq.id));
   }
 }
 
@@ -762,22 +1060,94 @@ function buildQuestCard(q,slot,today,source){
   return card;
 }
 
-// ══════════════════════════════════════════
-// HABIT ACTIONS
-// ══════════════════════════════════════════
+function buildSideQuestCard(q,slot,today,isDone,source,customId){
+  const color=QUEST_COLORS.side;
+  const card=document.createElement('div');
+  card.className='qcard'+(isDone?' q-done':'');
+  card.style.setProperty('--qc',color);
+  const srcTag=source==='custom'?'<span class="qtag custom">Мій побічний</span>':'<span class="qtag" style="border-color:#8b4513;color:#8b4513">Побічний квест</span>';
+  const xpColor=isDone?`color:${color}`:'';
+  card.innerHTML=`
+    <div class="qtop">
+      <div class="qemb">${q.icon}</div>
+      <div class="qmid">
+        <div class="qname">${q.name}</div>
+        <div class="qdesc">${q.desc||''}</div>
+        <div class="qmeta">${srcTag}<span class="qtag repeat-t">Щоденний</span></div>
+      </div>
+      <div class="qright">
+        <div class="qxp-big" style="${xpColor}">+${q.xp||10}</div>
+        <div class="qxp-lbl">xp</div>
+      </div>
+    </div>`;
+  if(today){
+    const actions=document.createElement('div');
+    actions.className='q-actions';
+    if(!isDone){
+      const btnC=document.createElement('button');
+      btnC.className='q-btn complete';
+      btnC.textContent='✓ Виконати';
+      btnC.onclick=()=>source==='custom'?completeSideCustomQuest(customId):completeSideQuest();
+      actions.appendChild(btnC);
+    }else{
+      const doneEl=document.createElement('div');
+      doneEl.style.cssText=`font-family:Inter,sans-serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:${color};padding:4px 0`;
+      doneEl.textContent='✓ Виконано сьогодні · завтра буде новий';
+      actions.appendChild(doneEl);
+    }
+    if(source==='custom'){
+      const btnE=document.createElement('button');
+      btnE.className='q-btn edit-q';
+      btnE.textContent='✎ Редагувати';
+      btnE.onclick=()=>openEditQuest(customId);
+      actions.appendChild(btnE);
+    }
+    card.appendChild(actions);
+  }
+  return card;
+}
+
+function completeSideQuest(){
+  if(!S.activeSideQuest)return;
+  const sq=getSideQuestById(S.activeSideQuest.pid);
+  if(!sq||S.activeSideQuest.doneOn===dk(new Date()))return;
+  const prevLvl=getLvl(S.totalXp);
+  S.activeSideQuest.doneOn=dk(new Date());
+  S.totalXp+=sq.xp;
+  save();
+  floatXp(sq.xp,'#8b4513');
+  const newLvl=getLvl(S.totalXp);
+  if(newLvl.n>prevLvl.n)showToast(`Рівень ${newLvl.n} — ${newLvl.ua}!`,'⚔️ Новий рівень!');
+  else showToast(`+${sq.xp} xp! Завтра буде новий.`,'🌿 Побічний виконано!');
+  render();
+}
+
+function completeSideCustomQuest(id){
+  const q=S.customQuests.find(x=>x.id===id);
+  if(!q)return;
+  const todayStr=dk(new Date());
+  if(!q.completedOn)q.completedOn=[];
+  if(q.completedOn.includes(todayStr))return;
+  const prevLvl=getLvl(S.totalXp);
+  q.completedOn.push(todayStr);
+  S.totalXp+=q.xp;
+  save();
+  floatXp(q.xp,'#8b4513');
+  const newLvl=getLvl(S.totalXp);
+  if(newLvl.n>prevLvl.n)showToast(`Рівень ${newLvl.n} — ${newLvl.ua}!`,'⚔️ Новий рівень!');
+  else showToast(`+${q.xp} xp за "${q.name}"!`,'🌿 Виконано!');
+  render();
+}
 
 function toggleHabit(h,dateStr,wasDone){
-  const prevLvl=getLvl(S.totalXp),prevPeak=S.peakPts,prevDrg=getDragon(prevPeak);
+  const prevLvl=getLvl(S.totalXp);
+  const ptsBefore=calcDragonPts();
   if(wasDone){S.days[dateStr][h.id]=false;S.totalXp=Math.max(0,S.totalXp-h.xp);}
   else{S.days[dateStr][h.id]=true;S.totalXp+=h.xp;floatXp(h.xp,h.color);}
-  save();recalcDragonToday();
-  const newLvl=getLvl(S.totalXp),newDrg=getDragon(S.peakPts);
+  save();
+  const newLvl=getLvl(S.totalXp);
   if(newLvl.n>prevLvl.n)showToast(`Рівень ${newLvl.n} — ${newLvl.ua}!`,'⚔️ Новий рівень!');
-  if(!wasDone&&newDrg.min>prevDrg.min){
-    document.getElementById('dragonCard').classList.add('evolving');
-    setTimeout(()=>document.getElementById('dragonCard').classList.remove('evolving'),1800);
-    setTimeout(()=>showToast(`Іскра стала "${newDrg.stage}"! ${newDrg.emoji}`,'🐉 Еволюція!'),400);
-  }
+  if(!wasDone) checkDragonEvolve(ptsBefore);
   render();
 }
 
@@ -842,6 +1212,7 @@ function openAddQuest(){
   document.getElementById('qDesc').value='';
   document.getElementById('qXp').value='25';
   document.getElementById('qType').value='once';
+  document.getElementById('qRole').value='main';
   document.getElementById('btnDel').style.display='none';
   buildEmojiPicker();
   document.getElementById('modalOverlay').classList.add('show');
@@ -854,21 +1225,11 @@ function openEditQuest(id){
   document.getElementById('qName').value=q.name;
   document.getElementById('qDesc').value=q.desc||'';
   document.getElementById('qXp').value=q.xp;
-  document.getElementById('qType').value=q.type;
+  document.getElementById('qType').value=q.role==='side'?'repeat':q.type;
+  document.getElementById('qRole').value=q.role||'main';
   document.getElementById('btnDel').style.display='';
   buildEmojiPicker();
   document.getElementById('modalOverlay').classList.add('show');
-}
-
-function buildEmojiPicker(){
-  const wrap=document.getElementById('emojiPicks');wrap.innerHTML='';
-  for(const e of QUEST_EMOJIS){
-    const btn=document.createElement('button');
-    btn.className='ep'+(e===selectedEmoji?' active':'');
-    btn.textContent=e;
-    btn.onclick=()=>{selectedEmoji=e;buildEmojiPicker();};
-    wrap.appendChild(btn);
-  }
 }
 
 function saveQuest(){
@@ -876,12 +1237,13 @@ function saveQuest(){
   if(!name){document.getElementById('qName').focus();return;}
   const xp=parseInt(document.getElementById('qXp').value);
   const type=document.getElementById('qType').value;
+  const role=document.getElementById('qRole').value;
   const desc=document.getElementById('qDesc').value.trim();
   if(editingId){
     const q=S.customQuests.find(x=>x.id===editingId);
-    if(q){q.icon=selectedEmoji;q.name=name;q.desc=desc;q.xp=xp;q.type=type;}
+    if(q){q.icon=selectedEmoji;q.name=name;q.desc=desc;q.xp=xp;q.type=role==='side'?'repeat':type;q.role=role;}
   }else{
-    S.customQuests.push({id:'cq_'+Date.now(),icon:selectedEmoji,name,desc,xp,type,completedOn:[]});
+    S.customQuests.push({id:'cq_'+Date.now(),icon:selectedEmoji,name,desc,xp,type:role==='side'?'repeat':type,role,completedOn:[]});
   }
   save();closeModal();render();
 }
@@ -896,6 +1258,78 @@ function closeModal(){document.getElementById('modalOverlay').classList.remove('
 document.getElementById('modalOverlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal()});
 
 // ══════════════════════════════════════════
+// HABIT MODAL
+// ══════════════════════════════════════════
+
+const HABIT_XP_LABELS={5:'5 xp — легка',8:'8 xp — середня',12:'12 xp — доросла'};
+
+function buildHabitEmojiPicker(){
+  const wrap=document.getElementById('habitEmojiPicks');wrap.innerHTML='';
+  for(const e of HABIT_EMOJIS){
+    const btn=document.createElement('button');
+    btn.className='ep'+(e===selectedHabitEmoji?' active':'');
+    btn.textContent=e;
+    btn.onclick=()=>{selectedHabitEmoji=e;buildHabitEmojiPicker();};
+    wrap.appendChild(btn);
+  }
+}
+
+function openAddHabit(){
+  editingHabitId=null;
+  selectedHabitEmoji=HABIT_EMOJIS[0];
+  document.getElementById('habitModalTitle').textContent='Нова звичка';
+  document.getElementById('hName').value='';
+  document.getElementById('hDesc').value='';
+  document.getElementById('hXp').value='8';
+  document.getElementById('hColor').value='#5b3a7e';
+  document.getElementById('btnHabitDel').style.display='none';
+  buildHabitEmojiPicker();
+  document.getElementById('habitModalOverlay').classList.add('show');
+}
+
+function openEditHabit(id){
+  const habits=getHabits();
+  const h=habits.find(x=>x.id===id);if(!h)return;
+  editingHabitId=id;
+  selectedHabitEmoji=h.icon;
+  document.getElementById('habitModalTitle').textContent='Редагувати звичку';
+  document.getElementById('hName').value=h.name;
+  document.getElementById('hDesc').value=h.desc||'';
+  document.getElementById('hXp').value=h.xp;
+  document.getElementById('hColor').value=h.color;
+  document.getElementById('btnHabitDel').style.display='';
+  buildHabitEmojiPicker();
+  document.getElementById('habitModalOverlay').classList.add('show');
+}
+
+function saveHabit(){
+  const name=document.getElementById('hName').value.trim();
+  if(!name){document.getElementById('hName').focus();return;}
+  const xp=parseInt(document.getElementById('hXp').value);
+  const color=document.getElementById('hColor').value;
+  const desc=document.getElementById('hDesc').value.trim();
+  // Якщо ще не було кастомного списку — копіюємо дефолти
+  if(!S.customHabits) S.customHabits=[...DEFAULT_HABITS];
+  if(editingHabitId){
+    const h=S.customHabits.find(x=>x.id===editingHabitId);
+    if(h){h.icon=selectedHabitEmoji;h.name=name;h.desc=desc;h.xp=xp;h.color=color;}
+  }else{
+    S.customHabits.push({id:'ch_'+Date.now(),icon:selectedHabitEmoji,name,desc,xp,color});
+  }
+  save();closeHabitModal();render();
+}
+
+function deleteHabit(){
+  if(!editingHabitId||!confirm('Видалити звичку? Минулий прогрес збережеться.'))return;
+  if(!S.customHabits) S.customHabits=[...DEFAULT_HABITS];
+  S.customHabits=S.customHabits.filter(x=>x.id!==editingHabitId);
+  save();closeHabitModal();render();
+}
+
+function closeHabitModal(){document.getElementById('habitModalOverlay').classList.remove('show')}
+document.getElementById('habitModalOverlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeHabitModal()});
+
+// ══════════════════════════════════════════
 // MISC
 // ══════════════════════════════════════════
 
@@ -904,8 +1338,7 @@ function goToday(){cur=new Date();cur.setHours(0,0,0,0);render()}
 function resetToday(){
   if(!confirm('Скинути звички на сьогодні?'))return;
   const k=dk(new Date());
-  for(const h of HABITS)if(S.days[k]?.[h.id])S.totalXp=Math.max(0,S.totalXp-h.xp);
-  if(S.days[k]?._dragon){S.dragonPts=Math.max(0,S.dragonPts-GOOD_DAY_PTS);}
+  for(const h of getHabits())if(S.days[k]?.[h.id])S.totalXp=Math.max(0,S.totalXp-h.xp);
   S.days[k]={};
   save();render();
 }
@@ -933,13 +1366,25 @@ function showToast(body,title){
 
 function exportData(){
   const data=JSON.stringify(S,null,2);
-  const blob=new Blob([data],{type:'application/json'});
-  const url=URL.createObjectURL(blob);
+  // iOS Safari: використовуємо Web Share API якщо доступний
+  if(navigator.share){
+    const file=new File([data],'life-quest-backup.json',{type:'application/json'});
+    navigator.share({files:[file],title:'Life Quest backup'})
+      .then(()=>showToast('Файл передано! 💾','✦ Резервна копія'))
+      .catch(()=>exportViaDataURI(data));
+  }else{
+    exportViaDataURI(data);
+  }
+}
+
+function exportViaDataURI(data){
+  const uri='data:application/json;charset=utf-8,'+encodeURIComponent(data);
   const a=document.createElement('a');
-  a.href=url;
+  a.href=uri;
   a.download='life-quest-backup.json';
+  document.body.appendChild(a);
   a.click();
-  URL.revokeObjectURL(url);
+  document.body.removeChild(a);
   showToast('Файл збережено 💾','✦ Резервна копія');
 }
 
@@ -967,28 +1412,300 @@ function importData(event){
   event.target.value='';
 }
 
+
+// ══════════════════════════════════════════
+// CAMPAIGN SYSTEM
+// ══════════════════════════════════════════
+
+const CAMP_EMOJIS=['⚡','🎯','📚','🏋️','🧘','💻','🎨','🌍','🏔️','🚀','🎸','✍️','🌱','🔬','🏃','🎹','📐','🧩','🛠️','🌟'];
+let editingCampId=null;
+let selectedCampEmoji=CAMP_EMOJIS[0];
+// Dragon special mood for 24h after milestone
+// stored as S.dragonMilestoneMsg + S.dragonMilestoneUntil
+
+function buildCampEmojiPicker(){
+  const wrap=document.getElementById('campEmojiPicks');wrap.innerHTML='';
+  for(const e of CAMP_EMOJIS){
+    const btn=document.createElement('button');
+    btn.className='ep'+(e===selectedCampEmoji?' active':'');
+    btn.textContent=e;
+    btn.onclick=()=>{selectedCampEmoji=e;buildCampEmojiPicker();};
+    wrap.appendChild(btn);
+  }
+}
+
+function addStageRow(name='',steps=5){
+  const list=document.getElementById('stagesList');
+  const row=document.createElement('div');
+  row.className='stage-row';
+  row.innerHTML=`
+    <input type="text" placeholder="Назва етапу" value="${name}" />
+    <input type="number" placeholder="кроків" value="${steps}" min="1" max="999" />
+    <button class="stage-del" onclick="this.closest('.stage-row').remove()">×</button>`;
+  list.appendChild(row);
+}
+
+function getStageRows(){
+  return Array.from(document.querySelectorAll('.stage-row')).map(row=>{
+    const inputs=row.querySelectorAll('input');
+    return{name:inputs[0].value.trim()||'Етап',steps:Math.max(1,parseInt(inputs[1].value)||5)};
+  }).filter(s=>s.name);
+}
+
+function openAddCampaign(){
+  editingCampId=null;selectedCampEmoji=CAMP_EMOJIS[0];
+  document.getElementById('campModalTitle').textContent='Нова місія';
+  document.getElementById('cName').value='';
+  document.getElementById('cColor').value='#3d6b4f';
+  document.getElementById('cStepXp').value='5';
+  document.getElementById('cMileXp').value='30';
+  document.getElementById('stagesList').innerHTML='';
+  document.getElementById('btnCampDel').style.display='none';
+  addStageRow('',10);
+  buildCampEmojiPicker();
+  document.getElementById('campModalOverlay').classList.add('show');
+}
+
+function openEditCampaign(id){
+  const c=S.campaigns.find(x=>x.id===id);if(!c)return;
+  editingCampId=id;selectedCampEmoji=c.icon;
+  document.getElementById('campModalTitle').textContent='Редагувати місію';
+  document.getElementById('cName').value=c.name;
+  document.getElementById('cColor').value=c.color;
+  document.getElementById('cStepXp').value=c.stepXp;
+  document.getElementById('cMileXp').value=c.mileXp;
+  document.getElementById('stagesList').innerHTML='';
+  for(const st of c.stages) addStageRow(st.name,st.steps);
+  document.getElementById('btnCampDel').style.display='';
+  buildCampEmojiPicker();
+  document.getElementById('campModalOverlay').classList.add('show');
+}
+
+function saveCampaign(){
+  const name=document.getElementById('cName').value.trim();
+  if(!name){document.getElementById('cName').focus();return;}
+  const stages=getStageRows();
+  if(!stages.length){alert('Додай хоча б один етап');return;}
+  const color=document.getElementById('cColor').value;
+  const stepXp=parseInt(document.getElementById('cStepXp').value);
+  const mileXp=parseInt(document.getElementById('cMileXp').value);
+  if(editingCampId){
+    const c=S.campaigns.find(x=>x.id===editingCampId);
+    if(c){c.icon=selectedCampEmoji;c.name=name;c.color=color;c.stepXp=stepXp;c.mileXp=mileXp;
+      // Merge stages: keep progress for existing stages by name
+      c.stages=stages.map(s=>{
+        const old=c.stages.find(o=>o.name===s.name);
+        return{name:s.name,steps:s.steps,done:old?Math.min(old.done,s.steps):0};
+      });
+    }
+  }else{
+    S.campaigns.push({
+      id:'camp_'+Date.now(),icon:selectedCampEmoji,name,color,stepXp,mileXp,
+      stages:stages.map(s=>({name:s.name,steps:s.steps,done:0})),
+      createdOn:dk(new Date()),log:[]
+    });
+  }
+  save();closeCampModal();renderCampaigns();
+}
+
+function deleteCampaign(){
+  if(!editingCampId||!confirm('Видалити місію?'))return;
+  S.campaigns=S.campaigns.filter(x=>x.id!==editingCampId);
+  save();closeCampModal();renderCampaigns();
+}
+
+function closeCampModal(){document.getElementById('campModalOverlay').classList.remove('show')}
+document.getElementById('campModalOverlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeCampModal()});
+
+function addCampaignSteps(id,n){
+  const c=S.campaigns.find(x=>x.id===id);if(!c||n<1)return;
+  const todayStr=dk(new Date());
+  const prevTotal=c.stages.reduce((a,s)=>a+s.done,0);
+  const totalSteps=c.stages.reduce((a,s)=>a+s.steps,0);
+
+  let remaining=n;
+  let milestoneHit=null;
+
+  for(const st of c.stages){
+    if(remaining<=0)break;
+    const canAdd=st.steps-st.done;
+    if(canAdd<=0)continue;
+    const adding=Math.min(canAdd,remaining);
+    st.done+=adding;
+    remaining-=adding;
+    // Check milestone completion
+    if(st.done===st.steps) milestoneHit=st;
+  }
+
+  const newTotal=c.stages.reduce((a,s)=>a+s.done,0);
+  const stepsAdded=newTotal-prevTotal;
+  if(stepsAdded<=0)return;
+
+  // XP for steps
+  const prevLvl=getLvl(S.totalXp);
+  S.totalXp+=stepsAdded*c.stepXp;
+
+  // Log
+  if(!c.log)c.log=[];
+  c.log.push({date:todayStr,steps:stepsAdded});
+
+  // Milestone bonus
+  if(milestoneHit){
+    S.totalXp+=c.mileXp;
+    floatXp(c.mileXp,c.color);
+    // Dragon special mood 24h
+    S.dragonMilestoneMsg=`${c.icon} Іскра бачила твій прогрес — "${milestoneHit.name}" пройдено! ✨`;
+    S.dragonMilestoneUntil=Date.now()+(24*60*60*1000);
+    // Flash card
+    setTimeout(()=>{
+      const card=document.getElementById('camp_'+id);
+      if(card){card.classList.add('milestone-flash');setTimeout(()=>card.classList.remove('milestone-flash'),1800);}
+    },100);
+    // Dragon card flash
+    setTimeout(()=>{
+      document.getElementById('dragonCard').classList.add('evolving');
+      setTimeout(()=>document.getElementById('dragonCard').classList.remove('evolving'),1800);
+    },300);
+    showToast(`Етап "${milestoneHit.name}" пройдено! +${c.mileXp} xp 🎉`,'⚡ Milestone!');
+  }else{
+    floatXp(stepsAdded*c.stepXp,c.color);
+    const newLvl=getLvl(S.totalXp);
+    if(newLvl.n>prevLvl.n)showToast(`Рівень ${newLvl.n} — ${newLvl.ua}!`,'⚔️ Новий рівень!');
+  }
+
+  // Check full completion
+  if(newTotal>=totalSteps){
+    S.totalXp+=c.mileXp; // bonus for full completion
+    if(!S.archivedCamps)S.archivedCamps=[];
+    S.archivedCamps.unshift({...c,completedOn:todayStr});
+    S.campaigns=S.campaigns.filter(x=>x.id!==id);
+    showToast(`Місія "${c.name}" завершена! 🏆`,'🐉 Місія виконана!');
+  }
+
+  save();renderCampaigns();render();
+}
+
+// SVG map — horizontal wavy dashed line with character and milestones
+function buildCampaignSVG(c){
+  const stages=c.stages;
+  const n=stages.length;
+  if(n===0)return'';
+
+  const W=300, H=120;
+  const LINE_Y=50, AMP=16, WAVE_W=250, X0=18;
+  const totalSteps=c.stages.reduce((a,s)=>a+s.steps,0);
+  const totalDone=c.stages.reduce((a,s)=>a+s.done,0);
+  const globalT=totalSteps>0?Math.min(1,totalDone/totalSteps):0;
+
+  const SAMPLES=60;
+  const cycles=Math.max(1.5,n*0.7);
+  const pts=[];
+  for(let i=0;i<=SAMPLES;i++){
+    const t=i/SAMPLES;
+    pts.push({x:X0+t*WAVE_W, y:LINE_Y-AMP*Math.sin(t*cycles*2*Math.PI)});
+  }
+  const polyPts=pts.map(p=>`${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+
+  const charIdx=Math.min(Math.round(globalT*SAMPLES),pts.length-1);
+  const charPt=pts[charIdx];
+  const clipX=(X0+globalT*WAVE_W).toFixed(1);
+  const clipId='cl'+Math.abs(c.id.split('').reduce((a,ch)=>a+ch.charCodeAt(0),0));
+  const PL=1000, dashOn=16, dashOff=24;
+
+  let milNodes='', cumS=0;
+  const curIdx=stages.findIndex(s=>s.done<s.steps);
+  for(let i=0;i<stages.length;i++){
+    const st=stages[i];
+    cumS+=st.steps;
+    const si=Math.min(Math.round(cumS/totalSteps*SAMPLES),pts.length-1);
+    const mp=pts[si];
+    const isFull=st.done>=st.steps, isCur=i===curIdx;
+    const col=isFull||isCur?c.color:'#c8b89a';
+    const check=isFull?`<text x="${mp.x.toFixed(1)}" y="${(mp.y+3.5).toFixed(1)}" text-anchor="middle" font-size="8" fill="#fff" font-weight="bold">✓</text>`:'';
+    const labelY=(i%2===0?mp.y-22:mp.y+28).toFixed(1);
+    const progress=isCur?` ${st.done}/${st.steps}`:'';
+    milNodes+=`<circle cx="${mp.x.toFixed(1)}" cy="${mp.y.toFixed(1)}" r="${isCur?8:6}" fill="${col}" opacity="${isFull?1:0.35}"/>
+    ${check}
+    <text x="${mp.x.toFixed(1)}" y="${labelY}" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="${isFull?c.color:isCur?c.color:'#b89070'}"${isCur?' font-weight="600"':''}>${st.name}${progress}</text>`;
+  }
+
+  const endPt=pts[pts.length-1];
+  const startDot=`<circle cx="${X0}" cy="${LINE_Y}" r="3.5" fill="${totalDone>0?c.color:'#c8b89a'}" opacity="0.6"/>`;
+  const endDot=`<circle cx="${endPt.x.toFixed(1)}" cy="${endPt.y.toFixed(1)}" r="3" fill="#c8b89a" opacity="0.3"/>`;
+  const charEmoji=totalDone>0?`<text x="${charPt.x.toFixed(1)}" y="${(charPt.y-14).toFixed(1)}" text-anchor="middle" font-size="17">🧝🏻‍♀️</text>`:'';
+
+  return`<svg class="camp-map" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">
+    <defs><clipPath id="${clipId}"><rect x="0" y="0" width="${clipX}" height="${H}"/></clipPath></defs>
+    <polyline points="${polyPts}" fill="none" stroke="#d9c9a8" stroke-width="2.5"
+      stroke-dasharray="${dashOn} ${dashOff}" stroke-linecap="round" pathLength="${PL}"/>
+    <polyline points="${polyPts}" fill="none" stroke="${c.color}" stroke-width="2.5"
+      stroke-dasharray="${dashOn} ${dashOff}" stroke-linecap="round" pathLength="${PL}"
+      clip-path="url(#${clipId})" opacity="0.9"/>
+    ${startDot}${endDot}${milNodes}${charEmoji}
+  </svg>`;
+}
+
+function renderCampaignCard(c,archived){
+  const totalDone=c.stages.reduce((a,s)=>a+s.done,0);
+  const totalSteps=c.stages.reduce((a,s)=>a+s.steps,0);
+  const card=document.createElement('div');
+  card.className='camp-card'+(archived?' archived':'');
+  card.id='camp_'+c.id;
+  card.style.setProperty('--cc',c.color);
+
+  const svgMap=buildCampaignSVG(c);
+  const isDone=totalDone>=totalSteps;
+
+  card.innerHTML=`
+    <div class="camp-head">
+      <div class="camp-icon">${c.icon}</div>
+      <div class="camp-title">${c.name}</div>
+      <div class="camp-status${isDone?' done':''}">${isDone?'Завершено':'Активна'}</div>
+    </div>
+    <div class="camp-steps">Прогрес: <strong>${totalDone}</strong> / ${totalSteps} кроків</div>
+    ${svgMap}
+    ${!archived&&!isDone?`
+    <div class="camp-actions">
+      <input class="camp-step-input" type="number" id="stepIn_${c.id}" value="1" min="1" max="99"/>
+      <button class="camp-step-btn" onclick="addCampaignSteps('${c.id}',parseInt(document.getElementById('stepIn_${c.id}').value)||1)">+ Крок</button>
+      <button class="camp-edit-btn" onclick="openEditCampaign('${c.id}')">✎ Редагувати</button>
+    </div>`:''}
+    ${archived?`<div style="font-family:Inter,sans-serif;font-size:10px;color:var(--ink4);margin-top:6px">✓ Завершено ${c.completedOn||''}</div>`:''}`;
+  return card;
+}
+
+function renderCampaigns(){
+  const list=document.getElementById('campaignList');
+  list.innerHTML='';
+  for(const c of S.campaigns) list.appendChild(renderCampaignCard(c,false));
+
+  const arch=document.getElementById('archiveList');
+  arch.innerHTML='';
+  const archived=S.archivedCamps||[];
+  document.getElementById('archiveCount').textContent=archived.length?`(${archived.length})`:'';
+  document.getElementById('archiveToggle').style.display=archived.length?'flex':'none';
+  for(const c of archived) arch.appendChild(renderCampaignCard(c,true));
+}
+
+function toggleArchive(){
+  const list=document.getElementById('archiveList');
+  const btn=document.getElementById('archiveToggle');
+  const open=list.classList.toggle('open');
+  btn.textContent=(open?'▾':'▸')+' Архів місій '+(document.getElementById('archiveCount').textContent);
+}
+
 // ══════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════
 
-applyMissedDays();
 maybeRotatePoolQuest();
+maybeRotateSideQuest();
 S.lastSeen=dk(new Date());
-const tStr=dk(new Date());
-S.todayDate=tStr;
-
-// Dragon: recount based on _dragon flag stored per day
-// This works correctly across page reloads
-const tData=S.days[tStr]||{};
-if((habitScore(tStr)||0)>=3 && !tData._dragon){
-  if(!S.days[tStr])S.days[tStr]={};
-  S.dragonPts=Math.min(MAX_PTS,(S.dragonPts||0)+GOOD_DAY_PTS);
-  S.peakPts=Math.max(S.peakPts||0,S.dragonPts);
-  S.days[tStr]._dragon=true;
-}
+S.todayDate=dk(new Date());
 
 save();
 render();
+renderCampaigns();
 </script>
 </body>
 </html>
