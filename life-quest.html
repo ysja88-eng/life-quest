@@ -998,26 +998,32 @@ function fmtDate(d){
 function calcDragonPts(){
   const todayStr=dk(new Date());
   let good=0, bad=0;
+
   // Минулі дні (не сьогодні)
   for(const k of Object.keys(S.days)){
-    if(k===todayStr) continue; // сьогодні ще йде — не штрафуємо
+    if(k===todayStr) continue;
     const sc=habitScore(k)||0;
     if(sc>=3) good++;
-    else bad++;
+    else if(sc>=1) bad++; // є спроба але менше 3 — легкий штраф
+    // sc===0: порожній об'єкт від dd() — не рахуємо, обробляємо через lastSeen
   }
-  // Сьогодні: тільки плюс якщо вже 3+, без штрафу якщо менше
+
+  // Сьогодні: тільки плюс якщо вже 3+, без штрафу
   if((habitScore(todayStr)||0)>=3) good++;
-  // Пропущені дні між lastSeen і вчора (не відкривала взагалі)
+
+  // Повністю пропущені дні (не відкривала, або відкривала але нічого не робила)
   if(S.lastSeen&&S.lastSeen!==todayStr){
     let d=new Date(S.lastSeen);
     d.setDate(d.getDate()+1);
     const yesterday=new Date();yesterday.setHours(0,0,0,0);yesterday.setDate(yesterday.getDate()-1);
     while(d<=yesterday){
       const k=dk(d);
-      if(!S.days[k]) bad++;
+      const sc=habitScore(k)||0;
+      if(sc===0) bad++; // повністю пропущений день
       d.setDate(d.getDate()+1);
     }
   }
+
   return Math.min(MAX_PTS, Math.max(0, good*GOOD_DAY_PTS - bad*MISS_PENALTY));
 }
 
