@@ -988,44 +988,25 @@ function fmtDate(d){
   return`${D[d.getDay()]}, ${d.getDate()} ${M[d.getMonth()]}`;
 }
 
+
 // ══════════════════════════════════════════
-// DRAGON SYSTEM (clean rewrite)
+// DRAGON SYSTEM
 // ══════════════════════════════════════════
-// Логіка: бали = кількість "хороших" днів (3+ звичок) * 10
-// мінус штраф 5 за кожен "поганий" день де є хоч якась активність,
-// мінус 5 за кожен повністю пропущений день між lastSeen і вчора.
-// Результат cap 0..100. Рахується щоразу з нуля — ніякого стану в S.
+// Логіка: бали = кількість "хороших" днів (3+ звичок) * 10, cap 100.
+// Рахується щоразу з нуля по реальним даним. Без штрафів.
+
+function countDoneProperly(k){
+  // Скільки звичок виконано в день k (тільки true, не false)
+  const d=S.days[k];
+  if(!d)return 0;
+  return getHabits().filter(h=>d[h.id]===true).length;
+}
 
 function calcDragonPts(){
-  const todayStr=dk(new Date());
-  let good=0, bad=0;
-
-  for(const k of Object.keys(S.days)){
-    if(k===todayStr) continue;
-    const sc=getHabits().filter(h=>S.days[k]?.[h.id]===true).length;
-    if(sc>=3) good++;
-    else if(sc>=1) bad++; // спроба але менше 3
-    // sc===0 (порожній або всі false) — не штрафуємо тут, обробляємо через lastSeen
-  }
-
-  // Сьогодні: тільки плюс якщо вже 3+
-  const todaySc=getHabits().filter(h=>S.days[todayStr]?.[h.id]===true).length;
-  if(todaySc>=3) good++;
-
-  // Повністю пропущені дні між lastSeen і вчора
-  if(S.lastSeen&&S.lastSeen!==todayStr){
-    let d=new Date(S.lastSeen);
-    d.setDate(d.getDate()+1);
-    const yesterday=new Date();yesterday.setHours(0,0,0,0);yesterday.setDate(yesterday.getDate()-1);
-    while(d<=yesterday){
-      const k=dk(d);
-      const sc=getHabits().filter(h=>S.days[k]?.[h.id]===true).length;
-      if(sc===0) bad++;
-      d.setDate(d.getDate()+1);
-    }
-  }
-
-  return Math.min(MAX_PTS, Math.max(0, good*GOOD_DAY_PTS - bad*MISS_PENALTY));
+  // Хороший день = 3+ звичок виконано
+  // Бали = кількість хороших днів * 10, але не більше 100
+  const goodDays=Object.keys(S.days).filter(k=>countDoneProperly(k)>=3).length;
+  return Math.min(MAX_PTS, goodDays*GOOD_DAY_PTS);
 }
 
 function getDragonStage(pts){
@@ -1037,7 +1018,7 @@ function getDragonStage(pts){
 function renderDragon(){
   const pts=calcDragonPts();
   const drg=getDragonStage(pts);
-  const goodDays=Object.keys(S.days).filter(k=>(habitScore(k)||0)>=3).length;
+  const goodDays=Object.keys(S.days).filter(k=>countDoneProperly(k)>=3).length;
 
   document.getElementById('dStage').textContent=drg.stage;
   document.getElementById('dPts').textContent=pts;
@@ -1050,14 +1031,10 @@ function renderDragon(){
   fill.className='bond-fill'+(pts<30?' low':pts<60?' mid':'');
 
   const moodI=Math.floor(Date.now()/86400000)%drg.moods.length;
-  const isSad=pts===0&&goodDays>0;
   const milestoneActive=S.dragonMilestoneMsg&&S.dragonMilestoneUntil&&Date.now()<S.dragonMilestoneUntil;
-  document.getElementById('dMood').textContent=
-    isSad?'😟 Іскра сумує… Поверни звички!':
-    milestoneActive?S.dragonMilestoneMsg:
-    drg.moods[moodI];
+  document.getElementById('dMood').textContent=milestoneActive?S.dragonMilestoneMsg:drg.moods[moodI];
   document.getElementById('dEmoji').textContent=drg.emoji;
-  document.getElementById('dEmoji').className='d-emoji'+(isSad?' sleeping':'');
+  document.getElementById('dEmoji').className='d-emoji';
 }
 
 function checkDragonEvolve(ptsBefore){
