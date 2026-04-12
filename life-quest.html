@@ -442,7 +442,7 @@ body{background:var(--parch2);color:var(--ink);font-family:'Crimson Pro',serif;m
       <div class="bond-bg"><div class="bond-fill" id="bondFill" style="width:0%"></div></div>
       <div class="d-stats">
         <div class="ds"><div class="ds-n" id="dPts">0</div><div class="ds-l">Очки</div></div>
-        <div class="ds"><div class="ds-n" id="dBest">0</div><div class="ds-l">Рекорд</div></div>
+        <div class="ds"><div class="ds-n" id="dBest">0</div><div class="ds-l">Стадія</div></div>
         <div class="ds"><div class="ds-n" id="dTotal">0</div><div class="ds-l">Хороших днів</div></div>
       </div>
     </div>
@@ -769,14 +769,17 @@ const LEVELS=[
 ];
 
 const DRAGON=[
-  {min:0,  emoji:'🥚',  stage:'Яйце',         moods:['Чекає на перше пробудження…','Щось ворушиться всередині…']},
-  {min:20, emoji:'🐣',  stage:'Пробуджується',moods:['Прокинулася! Продовжуй! ✨','Маленька але сильна духом']},
-  {min:40, emoji:'🐲',  stage:'Дракончик',    moods:['Вже літає поруч! 🌿','Пишається твоїми звичками']},
-  {min:70, emoji:'🐉',  stage:'Дорослий',     moods:['Могутній і відданий. Ти герой!','Іскра горить яскраво 🔥']},
-  {min:95, emoji:'✨🐉', stage:'Легендарний',  moods:['Легендарний дракон! Ти — міф! 👑','Абсолютна сила духу ✨']},
+  {stage:0, emoji:'🥚',  name:'Яйце',         moods:['Чекає на перше пробудження…','Щось ворушиться всередині…']},
+  {stage:1, emoji:'🐣',  name:'Пробуджується',moods:['Прокинулася! Продовжуй! ✨','Маленька але сильна духом']},
+  {stage:2, emoji:'🐲',  name:'Дракончик',    moods:['Вже літає поруч! 🌿','Пишається твоїми звичками']},
+  {stage:3, emoji:'🐉',  name:'Дорослий',     moods:['Могутній і відданий. Ти герой!','Іскра горить яскраво 🔥']},
+  {stage:4, emoji:'✨🐉',name:'Легендарний',  moods:['Легендарний дракон! Ти — міф! 👑','Абсолютна сила духу ✨']},
 ];
-
-const MISS_PENALTY=5, GOOD_DAY_PTS=10, MAX_PTS=100;
+const DRAGON_STAGE_CAP=100; // балів для переходу на наступну стадію
+const GOOD_DAY_PTS=10;      // +10 за хороший день (3+ звичок)
+const QUEST_BONUS_PTS=5;    // +5 за обидва квести виконані
+const MISSION_BONUS_PTS=3;  // +3 за milestone місії
+const MAX_PTS=100;
 const QUEST_COOLDOWN_DAYS=2; // days before new quest appears after done/declined
 
 // Pool of rotating quests — system will pick one at a time
@@ -869,8 +872,8 @@ const ACHIEVEMENTS=[
   {id:'read20',       icon:'📖', name:'Книжковий хробак', desc:'Читання виконано 20 разів',             check:()=>Object.keys(S.days).filter(k=>S.days[k]?.read).length>=20},
   {id:'bed10',        icon:'🌙', name:'Нічна фея',        desc:'Відбій вчасно 10 разів',               check:()=>Object.keys(S.days).filter(k=>S.days[k]?.bed).length>=10},
   {id:'first_mission',icon:'🗺️', name:'Перша місія',     desc:'Завершити першу місію',                check:()=>(S.archivedCamps||[]).length>=1},
-  {id:'dragon2',      icon:'🐲', name:'Друг дракона',     desc:'Іскра досягла стадії Дракончик',       check:()=>calcDragonPts()>=40},
-  {id:'dragon4',      icon:'✨', name:'Легендарний зв\'язок',desc:'Іскра стала Легендарною',           check:()=>calcDragonPts()>=95},
+  {id:'dragon2',      icon:'🐲', name:'Друг дракона',       desc:'Іскра досягла стадії Дракончик',  check:()=>(S.dragon?.stage||0)>=2},
+  {id:'dragon4',      icon:'✨', name:'Легендарний зв\'язок',desc:'Іскра стала Легендарною',        check:()=>(S.dragon?.stage||0)>=4},
   {id:'five_achiev',  icon:'🏆', name:'Колекціонер',      desc:'Відкрити 5 досягнень',                 check:()=>(S.achievements||[]).length>=5},
   {id:'gooddays50',   icon:'🌟', name:'Майстер звичок',   desc:'50 хороших днів всього',               check:()=>Object.keys(S.days).filter(k=>(Object.values(S.days[k]||{}).filter(Boolean).length)>=3).length>=50},
   {id:'combo14',      icon:'💪', name:'Незламна',         desc:'Combo 14 днів',                        check:()=>(S.combo?.streak||0)>=14},
@@ -942,6 +945,7 @@ if(!S.combo)         S.combo={streak:0,lastDate:null};
 if(!S.diary)         S.diary={};
 if(!S.diaryArchive)  S.diaryArchive=[];
 if(!S.treasure)      S.treasure={lastWeek:null,lastBigWeek:null,pending:null};
+if(!S.dragon)        S.dragon={stage:0,pts:0,bondPts:0}; // stage 0-4, pts в поточній стадії, bondPts після легендарного
 
 // Актуальний список звичок: або дефолт, або збережений користувачем
 function getHabits(){return S.customHabits||DEFAULT_HABITS;}
@@ -992,59 +996,127 @@ function fmtDate(d){
 // ══════════════════════════════════════════
 // DRAGON SYSTEM
 // ══════════════════════════════════════════
-// Логіка: бали = кількість "хороших" днів (3+ звичок) * 10, cap 100.
-// Рахується щоразу з нуля по реальним даним. Без штрафів.
+// Механіка:
+// - Стадії 0-4 (Яйце → Легендарний). Кожна стадія: 0-100 балів.
+// - При 100 балах — перехід на наступну стадію, бали скидаються в 0.
+// - Після Легендарного (stage=4) — режим "Зв'язок": бали накопичуються як bondPts.
+// - Нарахування: +10 за хороший день (3+ звичок), +5 за обидва квести, +3 за milestone.
+// - Настрій після Легендарного залежить від сьогоднішніх балів.
 
-function countDoneProperly(k){
-  // Скільки звичок виконано в день k (тільки true, не false)
-  const d=S.days[k];
-  if(!d)return 0;
-  return getHabits().filter(h=>d[h.id]===true).length;
+function getDragonData(){
+  if(!S.dragon||typeof S.dragon.stage==='undefined') S.dragon={stage:0,pts:0,bondPts:0};
+  return S.dragon;
 }
 
-function calcDragonPts(){
-  // Хороший день = 3+ звичок виконано
-  // Бали = кількість хороших днів * 10, але не більше 100
-  const goodDays=Object.keys(S.days).filter(k=>countDoneProperly(k)>=3).length;
-  return Math.min(MAX_PTS, goodDays*GOOD_DAY_PTS);
+function migrateDragonPts(){
+  // Якщо dragon.pts і stage обидва 0, але є хороші дні — відновлюємо стан
+  const d=getDragonData();
+  const goodDays=Object.keys(S.days).filter(k=>
+    getHabits().filter(h=>S.days[k]?.[h.id]===true).length>=3
+  ).length;
+  if(goodDays===0) return;
+  // Тільки якщо очки і стадія нульові — виглядає як незаповнений стан
+  if(d.stage===0&&d.pts===0&&d.bondPts===0&&goodDays>0){
+    const totalPts=goodDays*GOOD_DAY_PTS;
+    d.stage=Math.min(4,Math.floor(totalPts/DRAGON_STAGE_CAP));
+    d.pts=totalPts%(DRAGON_STAGE_CAP);
+    if(d.stage>=4){d.stage=4;d.bondPts=totalPts-4*DRAGON_STAGE_CAP;d.pts=0;}
+    save();
+  }
 }
 
-function getDragonStage(pts){
-  let d=DRAGON[0];
-  for(const x of DRAGON) if(pts>=x.min) d=x;
-  return d;
+function addDragonPts(n){
+  const d=getDragonData();
+  if(d.stage>=4){
+    // Режим зв'язку — бали просто накопичуються
+    d.bondPts=(d.bondPts||0)+n;
+    save();renderDragon();
+    return;
+  }
+  const prevStage=d.stage;
+  d.pts+=n;
+  // Перехід на наступну стадію
+  while(d.pts>=DRAGON_STAGE_CAP&&d.stage<4){
+    d.pts-=DRAGON_STAGE_CAP;
+    d.stage+=1;
+    save();
+    const newD=DRAGON[d.stage];
+    document.getElementById('dragonCard').classList.add('evolving');
+    setTimeout(()=>document.getElementById('dragonCard').classList.remove('evolving'),1800);
+    setTimeout(()=>showToast(`Іскра стала "${newD.name}"! ${newD.emoji}`,'🐉 Еволюція!'),400);
+  }
+  if(d.pts<0)d.pts=0;
+  save();renderDragon();
+}
+
+function getTodayDragonPts(){
+  // Скільки балів дракона зароблено сьогодні
+  const todayStr=dk(new Date());
+  let pts=0;
+  // Хороший день
+  const sc=getHabits().filter(h=>S.days[todayStr]?.[h.id]===true).length;
+  if(sc>=3) pts+=GOOD_DAY_PTS;
+  // Обидва квести виконані сьогодні
+  const mainDone=S.activePoolQuest?.status==='done'&&S.activePoolQuest?.doneOn===todayStr;
+  const sideDone=S.activeSideQuest?.doneOn===todayStr;
+  if(mainDone&&sideDone) pts+=QUEST_BONUS_PTS;
+  return pts;
 }
 
 function renderDragon(){
-  const pts=calcDragonPts();
-  const drg=getDragonStage(pts);
-  const goodDays=Object.keys(S.days).filter(k=>countDoneProperly(k)>=3).length;
+  const d=getDragonData();
+  const drg=DRAGON[Math.min(d.stage,4)];
+  const isLegendary=d.stage>=4;
 
-  document.getElementById('dStage').textContent=drg.stage;
-  document.getElementById('dPts').textContent=pts;
-  document.getElementById('dBest').textContent=goodDays;
-  document.getElementById('dTotal').textContent=goodDays;
-  document.getElementById('bondPts').textContent=pts+' / 100';
+  document.getElementById('dStage').textContent=drg.name;
+  document.getElementById('dPts').textContent=isLegendary?(d.bondPts||0):d.pts;
+  document.getElementById('dBest').textContent=d.stage;
+  document.getElementById('dTotal').textContent=Object.keys(S.days).filter(k=>getHabits().filter(h=>S.days[k]?.[h.id]===true).length>=3).length;
 
+  const fillPts=isLegendary?Math.min(100,(d.bondPts||0)%100):d.pts;
+  document.getElementById('bondPts').textContent=isLegendary?`${d.bondPts||0} зв'язок`:`${d.pts} / 100`;
   const fill=document.getElementById('bondFill');
-  fill.style.width=pts+'%';
-  fill.className='bond-fill'+(pts<30?' low':pts<60?' mid':'');
+  fill.style.width=fillPts+'%';
+  fill.className='bond-fill'+(fillPts<30?' low':fillPts<60?' mid':'');
 
-  const moodI=Math.floor(Date.now()/86400000)%drg.moods.length;
+  // Настрій
+  let mood;
   const milestoneActive=S.dragonMilestoneMsg&&S.dragonMilestoneUntil&&Date.now()<S.dragonMilestoneUntil;
-  document.getElementById('dMood').textContent=milestoneActive?S.dragonMilestoneMsg:drg.moods[moodI];
+  if(milestoneActive){
+    mood=S.dragonMilestoneMsg;
+  }else if(isLegendary){
+    const todayPts=getTodayDragonPts();
+    if(todayPts===0) mood='😔 Іскра сумує… Поверни звички!';
+    else if(todayPts>=15) mood='🥰❤️ Іскра в захваті! Серця для тебе!';
+    else mood='😊 Іскра радіє! Гарний день!';
+  }else{
+    const moodI=Math.floor(Date.now()/86400000)%drg.moods.length;
+    mood=drg.moods[moodI];
+  }
+  document.getElementById('dMood').textContent=mood;
   document.getElementById('dEmoji').textContent=drg.emoji;
   document.getElementById('dEmoji').className='d-emoji';
 }
 
-function checkDragonEvolve(ptsBefore){
-  const ptsAfter=calcDragonPts();
-  const stageBefore=getDragonStage(ptsBefore);
-  const stageAfter=getDragonStage(ptsAfter);
-  if(stageAfter.min>stageBefore.min){
-    document.getElementById('dragonCard').classList.add('evolving');
-    setTimeout(()=>document.getElementById('dragonCard').classList.remove('evolving'),1800);
-    setTimeout(()=>showToast(`Іскра стала "${stageAfter.stage}"! ${stageAfter.emoji}`,'🐉 Еволюція!'),400);
+function checkDragonEvolve(){
+  // Викликається після виконання звичок/квестів
+  // addDragonPts вже обробляє еволюцію — тут просто оновлюємо відображення
+  renderDragon();
+}
+
+function checkQuestDragonBonus(){
+  // Бонус +5 якщо обидва квести виконані сьогодні (вперше)
+  const todayStr=dk(new Date());
+  const mainDone=S.activePoolQuest?.status==='done'&&S.activePoolQuest?.doneOn===todayStr;
+  const sideDone=S.activeSideQuest?.doneOn===todayStr;
+  if(mainDone&&sideDone){
+    // Перевіряємо чи вже давали бонус сьогодні
+    if(S.dragon?.questBonusDate!==todayStr){
+      if(!S.dragon)S.dragon={stage:0,pts:0,bondPts:0};
+      S.dragon.questBonusDate=todayStr;
+      addDragonPts(QUEST_BONUS_PTS);
+      showToast(`+${QUEST_BONUS_PTS} балів Іскрі за обидва квести! 🐉`,'✦ Бонус');
+    }
   }
 }
 
@@ -1369,6 +1441,7 @@ function completeSideQuest(){
   S.totalXp+=sq.xp;
   save();
   floatXp(sq.xp,'#8b4513');
+  checkQuestDragonBonus();
   const newLvl=getLvl(S.totalXp);
   if(newLvl.n>prevLvl.n)showToast(`Рівень ${newLvl.n} — ${newLvl.ua}!`,'⚔️ Новий рівень!');
   else showToast(`+${sq.xp} xp! Завтра буде новий.`,'🌿 Побічний виконано!');
@@ -1394,22 +1467,30 @@ function completeSideCustomQuest(id){
 
 function toggleHabit(h,dateStr,wasDone){
   const prevLvl=getLvl(S.totalXp);
-  const ptsBefore=calcDragonPts();
   const mult=getComboMult();
   const earned=Math.round(h.xp*mult);
+  const todayStr=dk(new Date());
+  const isToday=dateStr===todayStr;
+
+  // Count habits before change
+  const scoreBefore=getHabits().filter(hh=>S.days[dateStr]?.[hh.id]===true).length;
+
   if(wasDone){
     dd(dateStr)[h.id]=false;
     S.totalXp=Math.max(0,S.totalXp-earned);
+    // Якщо сьогодні і перейшли з 3→2 — відбираємо дракон-бали
+    if(isToday&&scoreBefore===3) addDragonPts(-GOOD_DAY_PTS);
   }else{
     dd(dateStr)[h.id]=true;
     S.totalXp+=earned;
     floatXp(earned,h.color,mult>1?getCombo().icon:'');
     updateCombo();
+    // Якщо сьогодні і досягли рівно 3 — даємо дракон-бали
+    if(isToday&&scoreBefore===2) addDragonPts(GOOD_DAY_PTS);
   }
   save();
   const newLvl=getLvl(S.totalXp);
   if(newLvl.n>prevLvl.n)showToast(`Рівень ${newLvl.n} — ${newLvl.ua}!`,'⚔️ Новий рівень!');
-  if(!wasDone) checkDragonEvolve(ptsBefore);
   checkAchievements();
   checkTreasure();
   render();
@@ -1428,6 +1509,8 @@ function completePoolQuest(){
   S.totalXp+=pq.xp;
   save();
   floatXp(pq.xp,'#5b3a7e');
+  // Перевіряємо бонус дракону: якщо тепер обидва квести виконані
+  checkQuestDragonBonus();
   const newLvl=getLvl(S.totalXp);
   if(newLvl.n>prevLvl.n)showToast(`Рівень ${newLvl.n} — ${newLvl.ua}!`,'⚔️ Новий рівень!');
   else showToast(`+${pq.xp} xp! Новий квест за ${QUEST_COOLDOWN_DAYS} дні.`,'🗺️ Квест виконано!');
@@ -1817,15 +1900,13 @@ function addCampaignSteps(id,n){
   if(milestoneHit){
     S.totalXp+=c.mileXp;
     floatXp(c.mileXp,c.color);
-    // Dragon special mood 24h
+    addDragonPts(MISSION_BONUS_PTS);
     S.dragonMilestoneMsg=`${c.icon} Іскра бачила твій прогрес — "${milestoneHit.name}" пройдено! ✨`;
     S.dragonMilestoneUntil=Date.now()+(24*60*60*1000);
-    // Flash card
     setTimeout(()=>{
       const card=document.getElementById('camp_'+id);
       if(card){card.classList.add('milestone-flash');setTimeout(()=>card.classList.remove('milestone-flash'),1800);}
     },100);
-    // Dragon card flash
     setTimeout(()=>{
       document.getElementById('dragonCard').classList.add('evolving');
       setTimeout(()=>document.getElementById('dragonCard').classList.remove('evolving'),1800);
@@ -2292,6 +2373,7 @@ S.lastSeen=dk(new Date());
 S.todayDate=dk(new Date());
 
 save();
+migrateDragonPts();
 render();
 renderCampaigns();
 renderDiary();
