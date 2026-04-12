@@ -1009,20 +1009,23 @@ function getDragonData(){
 }
 
 function migrateDragonPts(){
-  // Якщо dragon.pts і stage обидва 0, але є хороші дні — відновлюємо стан
   const d=getDragonData();
+  const todayStr=dk(new Date());
   const goodDays=Object.keys(S.days).filter(k=>
     getHabits().filter(h=>S.days[k]?.[h.id]===true).length>=3
-  ).length;
-  if(goodDays===0) return;
-  // Тільки якщо очки і стадія нульові — виглядає як незаповнений стан
-  if(d.stage===0&&d.pts===0&&d.bondPts===0&&goodDays>0){
-    const totalPts=goodDays*GOOD_DAY_PTS;
+  );
+  if(goodDays.length===0) return;
+  if(d.stage===0&&d.pts===0&&d.bondPts===0){
+    const totalPts=goodDays.length*GOOD_DAY_PTS;
     d.stage=Math.min(4,Math.floor(totalPts/DRAGON_STAGE_CAP));
-    d.pts=totalPts%(DRAGON_STAGE_CAP);
+    d.pts=totalPts%DRAGON_STAGE_CAP;
     if(d.stage>=4){d.stage=4;d.bondPts=totalPts-4*DRAGON_STAGE_CAP;d.pts=0;}
-    save();
   }
+  // Встановлюємо флаг якщо сьогодні вже хороший день
+  if(goodDays.includes(todayStr)&&d.todayGoodDay!==todayStr){
+    d.todayGoodDay=todayStr;
+  }
+  save();
 }
 
 function addDragonPts(n){
@@ -1472,23 +1475,32 @@ function toggleHabit(h,dateStr,wasDone){
   const todayStr=dk(new Date());
   const isToday=dateStr===todayStr;
 
-  // Count habits before change
-  const scoreBefore=getHabits().filter(hh=>S.days[dateStr]?.[hh.id]===true).length;
-
   if(wasDone){
     dd(dateStr)[h.id]=false;
     S.totalXp=Math.max(0,S.totalXp-earned);
-    // Якщо сьогодні і перейшли з 3→2 — відбираємо дракон-бали
-    if(isToday&&scoreBefore===3) addDragonPts(-GOOD_DAY_PTS);
   }else{
     dd(dateStr)[h.id]=true;
     S.totalXp+=earned;
     floatXp(earned,h.color,mult>1?getCombo().icon:'');
     updateCombo();
-    // Якщо сьогодні і досягли рівно 3 — даємо дракон-бали
-    if(isToday&&scoreBefore===2) addDragonPts(GOOD_DAY_PTS);
   }
-  save();
+
+  // Дракон: для сьогоднішнього дня — флаг todayGoodDay
+  if(isToday){
+    const scoreNow=getHabits().filter(hh=>S.days[todayStr]?.[hh.id]===true).length;
+    const d=getDragonData();
+    const wasGood=d.todayGoodDay===todayStr;
+    const isGoodNow=scoreNow>=3;
+    if(isGoodNow&&!wasGood){
+      d.todayGoodDay=todayStr;
+      addDragonPts(GOOD_DAY_PTS);
+    }else if(!isGoodNow&&wasGood){
+      d.todayGoodDay=null;
+      addDragonPts(-GOOD_DAY_PTS);
+    }
+    save();
+  }
+
   const newLvl=getLvl(S.totalXp);
   if(newLvl.n>prevLvl.n)showToast(`Рівень ${newLvl.n} — ${newLvl.ua}!`,'⚔️ Новий рівень!');
   checkAchievements();
