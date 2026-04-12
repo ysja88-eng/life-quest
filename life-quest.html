@@ -963,7 +963,8 @@ const dk=d=>d.toISOString().split('T')[0];
 const dkToDate=s=>{const[y,m,d]=s.split('-').map(Number);const dt=new Date(y,m-1,d);dt.setHours(0,0,0,0);return dt};
 const daysDiff=(a,b)=>Math.floor((dkToDate(a)-dkToDate(b))/(1000*60*60*24));
 
-function dd(k){if(!S.days[k])S.days[k]={};return S.days[k]}
+function dd(k){if(!S.days[k])S.days[k]={};return S.days[k]} // only call when writing
+function safeDay(k){return S.days[k]||{}} // read-only, no side effects
 function getLvl(xp){let l=LEVELS[0];for(const x of LEVELS)if(xp>=x.xp)l=x;return l}
 function getNext(xp){for(const x of LEVELS)if(xp<x.xp)return x;return null}
 function habitScore(k){const d=S.days[k];if(!d)return null;return getHabits().filter(h=>d[h.id]).length}
@@ -999,27 +1000,27 @@ function calcDragonPts(){
   const todayStr=dk(new Date());
   let good=0, bad=0;
 
-  // Минулі дні (не сьогодні)
   for(const k of Object.keys(S.days)){
     if(k===todayStr) continue;
-    const sc=habitScore(k)||0;
+    const sc=getHabits().filter(h=>S.days[k]?.[h.id]===true).length;
     if(sc>=3) good++;
-    else if(sc>=1) bad++; // є спроба але менше 3 — легкий штраф
-    // sc===0: порожній об'єкт від dd() — не рахуємо, обробляємо через lastSeen
+    else if(sc>=1) bad++; // спроба але менше 3
+    // sc===0 (порожній або всі false) — не штрафуємо тут, обробляємо через lastSeen
   }
 
-  // Сьогодні: тільки плюс якщо вже 3+, без штрафу
-  if((habitScore(todayStr)||0)>=3) good++;
+  // Сьогодні: тільки плюс якщо вже 3+
+  const todaySc=getHabits().filter(h=>S.days[todayStr]?.[h.id]===true).length;
+  if(todaySc>=3) good++;
 
-  // Повністю пропущені дні (не відкривала, або відкривала але нічого не робила)
+  // Повністю пропущені дні між lastSeen і вчора
   if(S.lastSeen&&S.lastSeen!==todayStr){
     let d=new Date(S.lastSeen);
     d.setDate(d.getDate()+1);
     const yesterday=new Date();yesterday.setHours(0,0,0,0);yesterday.setDate(yesterday.getDate()-1);
     while(d<=yesterday){
       const k=dk(d);
-      const sc=habitScore(k)||0;
-      if(sc===0) bad++; // повністю пропущений день
+      const sc=getHabits().filter(h=>S.days[k]?.[h.id]===true).length;
+      if(sc===0) bad++;
       d.setDate(d.getDate()+1);
     }
   }
@@ -1133,7 +1134,7 @@ function isPoolQuestDone(){
 // ══════════════════════════════════════════
 
 function render(){
-  const dateStr=dk(cur),data=dd(dateStr),today=isToday(cur);
+  const dateStr=dk(cur),data=safeDay(dateStr),today=isToday(cur);
   document.getElementById('nlbl').textContent=fmtDate(cur);
   document.getElementById('qq').textContent='« '+QUOTES[(cur.getDate()+cur.getMonth()*3)%QUOTES.length]+' »';
 
@@ -1417,13 +1418,13 @@ function completeSideCustomQuest(id){
 function toggleHabit(h,dateStr,wasDone){
   const prevLvl=getLvl(S.totalXp);
   const ptsBefore=calcDragonPts();
+  const mult=getComboMult();
+  const earned=Math.round(h.xp*mult);
   if(wasDone){
-    S.days[dateStr][h.id]=false;
-    S.totalXp=Math.max(0,S.totalXp-h.xp);
+    dd(dateStr)[h.id]=false;
+    S.totalXp=Math.max(0,S.totalXp-earned);
   }else{
-    S.days[dateStr][h.id]=true;
-    const mult=getComboMult();
-    const earned=Math.round(h.xp*mult);
+    dd(dateStr)[h.id]=true;
     S.totalXp+=earned;
     floatXp(earned,h.color,mult>1?getCombo().icon:'');
     updateCombo();
