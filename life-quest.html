@@ -945,7 +945,7 @@ if(!S.combo)         S.combo={streak:0,lastDate:null};
 if(!S.diary)         S.diary={};
 if(!S.diaryArchive)  S.diaryArchive=[];
 if(!S.treasure)      S.treasure={lastWeek:null,lastBigWeek:null,pending:null};
-if(!S.dragon)        S.dragon={stage:0,pts:0,bondPts:0}; // stage 0-4, pts в поточній стадії, bondPts після легендарного
+if(!S.dragon)        S.dragon={stage:0,pts:0,bondPts:0,todayGoodDay:null,questBonusDate:null};
 
 // Актуальний список звичок: або дефолт, або збережений користувачем
 function getHabits(){return S.customHabits||DEFAULT_HABITS;}
@@ -994,36 +994,50 @@ function fmtDate(d){
 
 
 // ══════════════════════════════════════════
-// DRAGON SYSTEM
+// DRAGON SYSTEM — Іскра
 // ══════════════════════════════════════════
-// Механіка:
-// - Стадії 0-4 (Яйце → Легендарний). Кожна стадія: 0-100 балів.
-// - При 100 балах — перехід на наступну стадію, бали скидаються в 0.
-// - Після Легендарного (stage=4) — режим "Зв'язок": бали накопичуються як bondPts.
-// - Нарахування: +10 за хороший день (3+ звичок), +5 за обидва квести, +3 за milestone.
-// - Настрій після Легендарного залежить від сьогоднішніх балів.
+// Стадії (0→4): 🥚 Яйце → 🐣 Пробуджується → 🐲 Дракончик → 🐉 Дорослий → ✨🐉 Легендарний
+// Кожна стадія: 0→100 балів. При 100 — перехід, бали скидаються в 0.
+// Нарахування:
+//   +10 — перехід 2→3 звичок (рівно один раз на день, симетричний -10 при знятті)
+//   +5  — обидва квести виконані в один день (вперше за день)
+//   +3  — milestone в місії
+// Після стадії 4 — режим Зв'язку: бали накопичуються, не скидаються.
+// Настрій у режимі Зв'язку: <3 звичок→😔, 10+→😊, 13+→🥰❤️
 
 function getDragonData(){
-  if(!S.dragon||typeof S.dragon.stage==='undefined') S.dragon={stage:0,pts:0,bondPts:0};
+  if(!S.dragon||typeof S.dragon.stage==='undefined'){
+    S.dragon={stage:0,pts:0,bondPts:0,todayGoodDay:null,questBonusDate:null};
+  }
+  // Міграція старих збережених об'єктів без нових полів
+  if(!('todayGoodDay' in S.dragon)) S.dragon.todayGoodDay=null;
+  if(!('questBonusDate' in S.dragon)) S.dragon.questBonusDate=null;
+  if(!('bondPts' in S.dragon)) S.dragon.bondPts=0;
   return S.dragon;
 }
 
 function migrateDragonPts(){
+  // Одноразова міграція: якщо дракон новий (pts=0, stage=0) і є накопичені хороші дні — зараховуємо.
   const d=getDragonData();
   const todayStr=dk(new Date());
   const goodDays=Object.keys(S.days).filter(k=>
     getHabits().filter(h=>S.days[k]?.[h.id]===true).length>=3
   );
-  if(goodDays.length===0) return;
-  if(d.stage===0&&d.pts===0&&d.bondPts===0){
+  if(d.stage===0&&d.pts===0&&d.bondPts===0&&goodDays.length>0){
     const totalPts=goodDays.length*GOOD_DAY_PTS;
     d.stage=Math.min(4,Math.floor(totalPts/DRAGON_STAGE_CAP));
-    d.pts=totalPts%DRAGON_STAGE_CAP;
+    d.pts=totalPts-(d.stage*DRAGON_STAGE_CAP);
+    if(d.pts<0)d.pts=0;
     if(d.stage>=4){d.stage=4;d.bondPts=totalPts-4*DRAGON_STAGE_CAP;d.pts=0;}
   }
-  // Встановлюємо флаг якщо сьогодні вже хороший день
-  if(goodDays.includes(todayStr)&&d.todayGoodDay!==todayStr){
+  // Встановлюємо флаг todayGoodDay якщо сьогодні вже хороший день і флаг ще не стоїть
+  if(goodDays.includes(todayStr)&&d.todayGoodDay===null){
     d.todayGoodDay=todayStr;
+  }
+  // Якщо флаг стоїть але звичок вже менше 3 — знімаємо (захист від некоректного стану)
+  if(d.todayGoodDay===todayStr){
+    const sc=getHabits().filter(h=>S.days[todayStr]?.[h.id]===true).length;
+    if(sc<3) d.todayGoodDay=null;
   }
   save();
 }
@@ -1031,14 +1045,15 @@ function migrateDragonPts(){
 function addDragonPts(n){
   const d=getDragonData();
   if(d.stage>=4){
-    // Режим зв'язку — бали просто накопичуються
-    d.bondPts=(d.bondPts||0)+n;
-    save();renderDragon();
+    // Режим Зв'язку — бали накопичуються без скидання
+    d.bondPts=Math.max(0,(d.bondPts||0)+n);
+    save();
+    renderDragon();
     return;
   }
-  const prevStage=d.stage;
   d.pts+=n;
-  // Перехід на наступну стадію
+  if(d.pts<0)d.pts=0;
+  // Перехід на наступну стадію (може бути каскадним)
   while(d.pts>=DRAGON_STAGE_CAP&&d.stage<4){
     d.pts-=DRAGON_STAGE_CAP;
     d.stage+=1;
@@ -1048,21 +1063,19 @@ function addDragonPts(n){
     setTimeout(()=>document.getElementById('dragonCard').classList.remove('evolving'),1800);
     setTimeout(()=>showToast(`Іскра стала "${newD.name}"! ${newD.emoji}`,'🐉 Еволюція!'),400);
   }
-  if(d.pts<0)d.pts=0;
-  save();renderDragon();
+  save();
+  renderDragon();
 }
 
 function getTodayDragonPts(){
-  // Скільки балів дракона зароблено сьогодні
+  // Скільки балів дракона «зароблено» сьогодні (для настрою в режимі Зв'язку)
   const todayStr=dk(new Date());
   let pts=0;
-  // Хороший день
-  const sc=getHabits().filter(h=>S.days[todayStr]?.[h.id]===true).length;
-  if(sc>=3) pts+=GOOD_DAY_PTS;
+  const d=getDragonData();
+  // Хороший день: тільки якщо флаг стоїть саме сьогодні
+  if(d.todayGoodDay===todayStr) pts+=GOOD_DAY_PTS;
   // Обидва квести виконані сьогодні
-  const mainDone=S.activePoolQuest?.status==='done'&&S.activePoolQuest?.doneOn===todayStr;
-  const sideDone=S.activeSideQuest?.doneOn===todayStr;
-  if(mainDone&&sideDone) pts+=QUEST_BONUS_PTS;
+  if(d.questBonusDate===todayStr) pts+=QUEST_BONUS_PTS;
   return pts;
 }
 
@@ -1074,10 +1087,13 @@ function renderDragon(){
   document.getElementById('dStage').textContent=drg.name;
   document.getElementById('dPts').textContent=isLegendary?(d.bondPts||0):d.pts;
   document.getElementById('dBest').textContent=d.stage;
-  document.getElementById('dTotal').textContent=Object.keys(S.days).filter(k=>getHabits().filter(h=>S.days[k]?.[h.id]===true).length>=3).length;
+  document.getElementById('dTotal').textContent=
+    Object.keys(S.days).filter(k=>getHabits().filter(h=>S.days[k]?.[h.id]===true).length>=3).length;
 
-  const fillPts=isLegendary?Math.min(100,(d.bondPts||0)%100):d.pts;
-  document.getElementById('bondPts').textContent=isLegendary?`${d.bondPts||0} зв'язок`:`${d.pts} / 100`;
+  // Шкала: в режимі Зв'язку крутимо по 100; інакше — поточні pts
+  const fillPts=isLegendary?Math.min(100,(d.bondPts||0)%100):Math.min(100,d.pts);
+  document.getElementById('bondPts').textContent=
+    isLegendary?`${d.bondPts||0} зв'язок`:`${d.pts} / 100`;
   const fill=document.getElementById('bondFill');
   fill.style.width=fillPts+'%';
   fill.className='bond-fill'+(fillPts<30?' low':fillPts<60?' mid':'');
@@ -1088,9 +1104,11 @@ function renderDragon(){
   if(milestoneActive){
     mood=S.dragonMilestoneMsg;
   }else if(isLegendary){
+    const todayStr=dk(new Date());
+    const habitCount=getHabits().filter(h=>S.days[todayStr]?.[h.id]===true).length;
     const todayPts=getTodayDragonPts();
-    if(todayPts===0) mood='😔 Іскра сумує… Поверни звички!';
-    else if(todayPts>=15) mood='🥰❤️ Іскра в захваті! Серця для тебе!';
+    if(habitCount<3) mood='😔 Іскра сумує… Поверни звички!';
+    else if(todayPts>=13) mood='🥰❤️ Іскра в захваті! Серця для тебе!';
     else mood='😊 Іскра радіє! Гарний день!';
   }else{
     const moodI=Math.floor(Date.now()/86400000)%drg.moods.length;
@@ -1101,22 +1119,15 @@ function renderDragon(){
   document.getElementById('dEmoji').className='d-emoji';
 }
 
-function checkDragonEvolve(){
-  // Викликається після виконання звичок/квестів
-  // addDragonPts вже обробляє еволюцію — тут просто оновлюємо відображення
-  renderDragon();
-}
-
 function checkQuestDragonBonus(){
-  // Бонус +5 якщо обидва квести виконані сьогодні (вперше)
+  // +QUEST_BONUS_PTS якщо обидва квести виконані сьогодні (один раз на день)
   const todayStr=dk(new Date());
   const mainDone=S.activePoolQuest?.status==='done'&&S.activePoolQuest?.doneOn===todayStr;
   const sideDone=S.activeSideQuest?.doneOn===todayStr;
   if(mainDone&&sideDone){
-    // Перевіряємо чи вже давали бонус сьогодні
-    if(S.dragon?.questBonusDate!==todayStr){
-      if(!S.dragon)S.dragon={stage:0,pts:0,bondPts:0};
-      S.dragon.questBonusDate=todayStr;
+    const d=getDragonData();
+    if(d.questBonusDate!==todayStr){
+      d.questBonusDate=todayStr;
       addDragonPts(QUEST_BONUS_PTS);
       showToast(`+${QUEST_BONUS_PTS} балів Іскрі за обидва квести! 🐉`,'✦ Бонус');
     }
@@ -1473,7 +1484,7 @@ function toggleHabit(h,dateStr,wasDone){
   const mult=getComboMult();
   const earned=Math.round(h.xp*mult);
   const todayStr=dk(new Date());
-  const isToday=dateStr===todayStr;
+  const isTodayDate=dateStr===todayStr;
 
   if(wasDone){
     dd(dateStr)[h.id]=false;
@@ -1485,18 +1496,24 @@ function toggleHabit(h,dateStr,wasDone){
     updateCombo();
   }
 
-  // Дракон: для сьогоднішнього дня — флаг todayGoodDay
-  if(isToday){
-    const scoreNow=getHabits().filter(hh=>S.days[todayStr]?.[hh.id]===true).length;
+  // Дракон: тільки для сьогоднішнього дня
+  if(isTodayDate){
+    const scoreAfter=getHabits().filter(hh=>S.days[todayStr]?.[hh.id]===true).length;
     const d=getDragonData();
-    const wasGood=d.todayGoodDay===todayStr;
-    const isGoodNow=scoreNow>=3;
-    if(isGoodNow&&!wasGood){
-      d.todayGoodDay=todayStr;
-      addDragonPts(GOOD_DAY_PTS);
-    }else if(!isGoodNow&&wasGood){
-      d.todayGoodDay=null;
-      addDragonPts(-GOOD_DAY_PTS);
+    const wasGood=d.todayGoodDay===todayStr; // чи вже зарахований хороший день
+
+    if(!wasDone){
+      // Додаємо звичку: перехід 2→3 (або менше→3+), якщо ще не зараховано
+      if(scoreAfter>=3&&!wasGood){
+        d.todayGoodDay=todayStr;
+        addDragonPts(GOOD_DAY_PTS);
+      }
+    }else{
+      // Знімаємо звичку: якщо зараховано і тепер менше 3 — знімаємо бонус
+      if(scoreAfter<3&&wasGood){
+        d.todayGoodDay=null;
+        addDragonPts(-GOOD_DAY_PTS);
+      }
     }
     save();
   }
